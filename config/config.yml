@@ -1,0 +1,29 @@
+server:
+  applicationConnectors:
+    - type: http
+      port: 8080
+  adminConnectors:
+    - type: http
+      port: 8081
+
+database:
+  driverClass: org.h2.Driver
+  user: sa
+  password: sa
+  url: jdbc:h2:mem:taxifleetdb;DB_CLOSE_DELAY=-1
+  properties:
+    charSet: UTF-8
+    hibernate.dialect: org.hibernate.dialect.H2Dialect
+    hibernate.hbm2ddl.auto: create-drop
+  maxSize: 10
+  minSize: 1
+  checkConnectionWhileIdle: true
+  evictionInterval: 10 seconds
+  validationQuery: "SELECT 1"
+
+
+swagger:
+  description: API Documentation for Taxi Fleet
+  title: Taxi Fleet APIs
+  version: 1.0.0
+  resourcePackage: com.taxifleet.resources

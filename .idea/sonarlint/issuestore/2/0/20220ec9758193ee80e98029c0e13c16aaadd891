@@ -1,0 +1,13 @@
+
+r	java:S106"+Replace this use of System.out by a logger.(ÚžÒÛþÿÿÿÿ8×‚‹¬–2J$32b5e7a2-4944-4a81-9e7c-589fc75c156e
+r	java:S106-"+Replace this use of System.out by a logger.(›…Œšÿÿÿÿÿ8Ðá¡¬–2J$a3957cfe-7538-4ee9-a52d-671ee9bacad9
+r	java:S106:"+Replace this use of System.out by a logger.(›…Œšÿÿÿÿÿ8ºÒ¼¬–2J$e6ded216-53f2-47bb-981a-10f42c123404
+ƒ	java:S125O"<This block of commented-out lines of code should be removed.(‹…æÚþÿÿÿÿ8ÐÝ˜¬–2J$f511e5e6-1a92-45c1-a040-9b72d5263ada
+{
+java:S1128"8Remove this unused import 'com.taxifleet.db.StoredTaxi'.(’§Œå8áÌÉ¬–2J$ffdc122c-f7b3-42d2-b701-522b014f0295
+~
+java:S1128";Remove this unused import 'com.taxifleet.enums.TaxiStatus'.(Óõüü8áÌÉ¬–2J$a0463eca-9758-4abe-8c7f-3ceb7d8b0332
+†
+java:S1128	"DRemove this unused import 'com.taxifleet.repository.TaxiRepository'.(¥õ¦J8áÌÉ¬–2J$906314f2-2d31-4829-8a05-442339216ee3
+s
+java:S1128"0Remove this unused import 'javax.inject.Inject'.(ì–íÔ8áÌÉ¬–2J$4c4acae3-b4c1-4c40-a8ee-2ab1ef31c2f7
