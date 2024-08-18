@@ -2,7 +2,6 @@ package com.taxifleet.services.impl;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredTaxi;
 import com.taxifleet.enums.TaxiStatus;
 import com.taxifleet.model.Location;
@@ -55,12 +54,12 @@ public class CachedTaxiServiceImpl implements CachedTaxiService {
 
 
     @Override
-    public StoredTaxi bookTaxi(StoredTaxi taxi, long bookingID) {
+    public boolean bookTaxi(StoredTaxi taxi, long bookingID) {
         taxi.setAvailable(false);
         taxi.setBookingId(bookingID);
         taxi.setStatus(TaxiStatus.BOOKED);
-        updateTaxi(taxi);
-        return null;
+        StoredTaxi storedTaxi = updateTaxi(taxi);
+        return TaxiStatus.BOOKED.equals(storedTaxi.getStatus());
     }
 
     @Override
@@ -121,12 +120,5 @@ public class CachedTaxiServiceImpl implements CachedTaxiService {
                 .filter(taxi -> taxi.isAvailable() && TaxiStatus.AVAILABLE.equals(taxi.getStatus()))
                 .findFirst()
                 .orElse(null);
-    }
-
-
-    public double distanceTo(Location other) {
-        double latDiff = this.latitude - other.latitude;
-        double lonDiff = this.longitude - other.longitude;
-        return Math.sqrt(latDiff * latDiff + lonDiff * lonDiff);
     }
 }

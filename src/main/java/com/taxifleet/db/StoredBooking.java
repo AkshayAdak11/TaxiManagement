@@ -1,6 +1,5 @@
 package com.taxifleet.db;
 import com.taxifleet.enums.BookingStatus;
-import com.taxifleet.model.Location;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -17,7 +16,7 @@ public class StoredBooking {
     private Long bookingId;
 
     @Column(name = "taxi_id")
-    private String taxId;
+    private String taxiId;
 
 
     @Column(name = "latitude", nullable = false)

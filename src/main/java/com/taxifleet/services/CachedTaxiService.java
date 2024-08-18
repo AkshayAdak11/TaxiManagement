@@ -10,7 +10,7 @@ public interface CachedTaxiService {
     List<StoredTaxi> getAllTaxis();
     StoredTaxi getTaxi(Long id);
     StoredTaxi createTaxi(StoredTaxi taxi);
-    StoredTaxi bookTaxi(StoredTaxi taxi, long bookingId);
+    boolean bookTaxi(StoredTaxi taxi, long bookingId);
     StoredTaxi updateTaxi(StoredTaxi taxi);
     void deleteTaxi(Long id);
     void setTaxiAvailability(Long id, boolean available);

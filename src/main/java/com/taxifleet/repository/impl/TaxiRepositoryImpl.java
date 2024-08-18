@@ -4,7 +4,6 @@ import com.taxifleet.db.StoredTaxi;
 import com.taxifleet.db.dao.TaxiDAO;
 import com.taxifleet.enums.TaxiStatus;
 import com.taxifleet.repository.TaxiRepository;
-import io.dropwizard.hibernate.UnitOfWork;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

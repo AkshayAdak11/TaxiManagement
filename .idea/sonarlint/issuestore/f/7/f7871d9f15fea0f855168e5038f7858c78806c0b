@@ -1,11 +1,0 @@
-
-W
-java:S1118":Add a private constructor to hide the implicit public one.(é«á8¸„Ç¬–2
-]
-java:S1854"@Remove this useless assignment to local variable "bookingQueue".(’ËÜ¬8¹„Ç¬–2
-_
-java:S1854"=Remove this useless assignment to local variable "taxiQueue".(¤‹ã‡şÿÿÿÿ8¹„Ç¬–2
-P
-java:S1481".Remove this unused "taxiQueue" local variable.(¤‹ã‡şÿÿÿÿ8º„Ç¬–2
-N
-java:S1481"1Remove this unused "bookingQueue" local variable.(’ËÜ¬8»„Ç¬–2

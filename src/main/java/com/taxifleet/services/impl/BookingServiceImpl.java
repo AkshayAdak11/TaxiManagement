@@ -4,12 +4,10 @@ import com.taxifleet.db.StoredBooking;
 import com.taxifleet.enums.BookingStatus;
 import com.taxifleet.model.BookingTaxis;
 import com.taxifleet.repository.BookingRepository;
-import com.taxifleet.repository.TaxiRepository;
 import com.taxifleet.services.BookingService;
 import com.taxifleet.services.MessagingService;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import java.util.List;
 
 public class BookingServiceImpl implements BookingService {
@@ -63,7 +61,7 @@ public class BookingServiceImpl implements BookingService {
     public void confirmBooking(BookingTaxis bookingTaxis, String taxiId) {
         StoredBooking storedBooking = bookingTaxis.getStoredBooking();
         storedBooking.setStatus(BookingStatus.COMPLETED);
-        storedBooking.setTaxId(taxiId);
+        storedBooking.setTaxiId(taxiId);
         bookingRepository.updateBooking(storedBooking);
     }
 }

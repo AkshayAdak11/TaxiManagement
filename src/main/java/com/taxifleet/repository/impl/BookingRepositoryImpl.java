@@ -35,7 +35,7 @@ public class BookingRepositoryImpl implements BookingRepository {
 
     @Override
     public StoredBooking updateBooking(StoredBooking booking) {
-        return bookingDAO.create(booking);
+        return bookingDAO.update(booking);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.taxifleet;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.taxifleet.db.StoredBooking;
+import com.taxifleet.db.StoredDashboard;
 import com.taxifleet.db.StoredTaxi;
 import com.taxifleet.module.BookingModule;
 import com.taxifleet.module.HibernateModule;
@@ -26,7 +27,7 @@ public class TaxiFleetApplication extends Application<TaxiFleetConfiguration> {
     private Injector injector;
 
     private final HibernateBundle<TaxiFleetConfiguration> hibernateBundle =
-            new HibernateBundle<TaxiFleetConfiguration>(StoredTaxi.class, StoredBooking.class) {
+            new HibernateBundle<TaxiFleetConfiguration>(StoredTaxi.class, StoredBooking.class, StoredDashboard.class) {
                 @Override
                 public DataSourceFactory getDataSourceFactory(TaxiFleetConfiguration configuration) {
                     return configuration.getDataSourceFactory();

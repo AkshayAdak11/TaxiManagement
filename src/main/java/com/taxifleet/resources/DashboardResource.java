@@ -1,23 +1,23 @@
 package com.taxifleet.resources;
 
+import com.taxifleet.db.StoredDashboard;
 import com.taxifleet.services.DashboardService;
-import io.dropwizard.hibernate.UnitOfWork;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.HashMap;
-import java.util.Map;
+import javax.ws.rs.core.Response;
 
 @Path("/dashboard")
+@Tag(name = "Dashboard", description = "Dashboard for Statistics")
 @Produces(MediaType.APPLICATION_JSON)
-@Tag(name = "Dashboard Api")
+@RolesAllowed({"ADMIN", "USER"})
+
 public class DashboardResource {
 
     private final DashboardService dashboardService;
@@ -28,13 +28,10 @@ public class DashboardResource {
     }
 
     @GET
-    @UnitOfWork
-    @ApiOperation(value = "Get dashboard statistics", notes = "Returns statistics for the dashboard")
-    public Map<String, Long> getDashboardStats() {
-        Map<String, Long> stats = new HashMap<>();
-        stats.put("totalBookings", dashboardService.getTotalBookings());
-        stats.put("totalCompletedBookings", dashboardService.getTotalCompletedBookings());
-        stats.put("totalPendingBookings", dashboardService.getTotalPendingBookings());
-        return stats;
+    @Path("/stats")
+    @Operation(description = "Get all stats for Booking")
+    public Response getDashboardStats() {
+        StoredDashboard dashboard = dashboardService.getLatestDashboardStats();
+        return Response.ok(dashboard).build();
     }
 }

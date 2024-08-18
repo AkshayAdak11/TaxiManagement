@@ -1,1 +1,5 @@
-com/taxifleet/services/BookingServiceTest.class
+com/taxifleet/resources/DashboardResourceTest.class
+com/taxifleet/services/impl/DashboardServiceImplTest.class
+com/taxifleet/services/impl/MessagingServiceImplTest.class
+com/taxifleet/services/impl/CachedTaxiServiceImplTest.class
+com/taxifleet/services/impl/BookingServiceImplTest.class

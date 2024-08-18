@@ -7,18 +7,19 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
 
-public class BookingDAO extends AbstractDAO<StoredBooking> {
+@Singleton
+public class BookingDAO {
 
     private final SessionFactory sessionFactory;
 
     @Inject
     public BookingDAO(SessionFactory sessionFactory) {
-        super(sessionFactory);
         this.sessionFactory = sessionFactory;
     }
 
@@ -84,4 +85,20 @@ public class BookingDAO extends AbstractDAO<StoredBooking> {
             session.close();
         }
     }
+
+    public StoredBooking update(StoredBooking storedBooking) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        try {
+            session.update(storedBooking);
+            transaction.commit();
+            return storedBooking;
+        } catch (Exception e) {
+            transaction.rollback();
+            throw e;
+        } finally {
+            session.close();
+        }
+    }
+
 }
