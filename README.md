@@ -72,7 +72,8 @@ You can clone the repository, follow the instructions in the `README.md`, and th
 
 
 
-Architecture Overview
+### Architecture Overview
+
 The system follows a service-oriented architecture with a focus on scalability and maintainability. Below is the UML class diagram representing the core components:
 
 
