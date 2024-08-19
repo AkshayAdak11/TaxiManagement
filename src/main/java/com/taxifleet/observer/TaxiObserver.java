@@ -31,10 +31,10 @@ public class TaxiObserver {
 
     public void update(StoredBooking storedBooking) {
         //Push in map according to pattern strategy
-        if (availableBookings.isEmpty() || !availableBookings.containsKey(storedBooking)) {
-            if (this.assignmentStrategy.isEligibleToServeBooking(taxi, storedBooking)) {
+        if (availableBookings.isEmpty() || !availableBookings.containsKey(storedBooking) &&
+                (this.assignmentStrategy.isEligibleToServeBooking(taxi, storedBooking))) {
                 availableBookings.put(storedBooking, true);
-            }
+
         }
     }
 

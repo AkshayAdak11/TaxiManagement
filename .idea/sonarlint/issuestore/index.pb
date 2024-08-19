@@ -110,3 +110,5 @@ Csrc/main/java/com/taxifleet/services/CentralizedBookingService.java,7/a/7a6e40
 Lsrc/main/java/com/taxifleet/services/impl/CentralizedBookingServiceImpl.java,2/b/2b71a403e229cda70334b1d09fc071794c25af84
 l
 <src/main/java/com/taxifleet/factory/TaxiObserverFactory.java,f/9/f9bc0bd1c43a68f2fbdde5265f81421c8947390c
+j
+:src/test/java/com/taxifleet/observer/TaxiObserverTest.java,a/e/aea927bff1c63d0b4f7604c045e0b7c4d05bbf07
