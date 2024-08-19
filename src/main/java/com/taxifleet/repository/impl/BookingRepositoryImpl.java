@@ -24,8 +24,8 @@ public class BookingRepositoryImpl implements BookingRepository {
     }
 
     @Override
-    public StoredBooking getBooking(Long id) {
-        return bookingDAO.findById(id);
+    public StoredBooking getBooking(long id) {
+        return bookingDAO.findByBookingId(id);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class BookingRepositoryImpl implements BookingRepository {
 
     @Override
     public void deleteBooking(Long id) {
-        StoredBooking booking = bookingDAO.findById(id);
+        StoredBooking booking = bookingDAO.findByBookingId(id);
         if (booking != null) {
             bookingDAO.delete(booking);
         }
@@ -53,4 +53,9 @@ public class BookingRepositoryImpl implements BookingRepository {
                 .filter(booking -> location.getLongitude() == booking.getLongitude())
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<StoredBooking> findAllPendingBookings() {
+        return bookingDAO.findPendingBookings();
+        }
 }

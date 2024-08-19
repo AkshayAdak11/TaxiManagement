@@ -9,13 +9,13 @@ import io.dropwizard.hibernate.UnitOfWork;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
-import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Singleton
 public class DashboardServiceImpl implements DashboardService {
+
+    //Implement QUEUE and do all behind it
 
     private final DashboardDAO dashboardDAO;
     private final BlockingQueue<StoredDashboard> dashboardQueue = new LinkedBlockingQueue<>();

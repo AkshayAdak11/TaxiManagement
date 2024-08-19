@@ -1,6 +1,8 @@
 package com.taxifleet.db.dao;
 
 import com.taxifleet.db.StoredBooking;
+import com.taxifleet.enums.BookingStatus;
+import com.taxifleet.model.Location;
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -21,21 +23,6 @@ public class BookingDAO {
     @Inject
     public BookingDAO(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
-    }
-
-    public StoredBooking findById(Long id) {
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
-        try {
-            StoredBooking result = session.get(StoredBooking.class, id);
-            transaction.commit();
-            return result;
-        } catch (Exception e) {
-            transaction.rollback();
-            throw e;
-        } finally {
-            session.close();
-        }
     }
 
     public List<StoredBooking> findAll() {
@@ -101,4 +88,61 @@ public class BookingDAO {
         }
     }
 
+    public List<StoredBooking> findbookinsBylocation(Location location) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        try {
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<StoredBooking> criteria = builder.createQuery(StoredBooking.class);
+            Root<StoredBooking> root = criteria.from(StoredBooking.class);
+            criteria.select(root);
+            List<StoredBooking> result = session.createQuery(criteria).getResultList();
+            transaction.commit();
+            return result;
+        } catch (Exception e) {
+            transaction.rollback();
+            throw e;
+        } finally {
+            session.close();
+        }
+    }
+
+    public StoredBooking findByBookingId(long bookingId) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        try {
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<StoredBooking> criteria = builder.createQuery(StoredBooking.class);
+            Root<StoredBooking> root = criteria.from(StoredBooking.class);
+            criteria.select(root).where(builder.equal(root.get("bookingId"), bookingId));
+            StoredBooking result = session.createQuery(criteria).uniqueResult();
+            transaction.commit();
+            return result;
+        } catch (Exception e) {
+            transaction.rollback();
+            throw e;
+        } finally {
+            session.close();
+        }
+    }
+
+
+    public List<StoredBooking> findPendingBookings() {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        try {
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<StoredBooking> criteria = builder.createQuery(StoredBooking.class);
+            Root<StoredBooking> root = criteria.from(StoredBooking.class);
+            criteria.select(root).where(builder.equal(root.get("status"), BookingStatus.PENDING));
+            List<StoredBooking> result = session.createQuery(criteria).getResultList();
+            transaction.commit();
+            return result;
+        } catch (Exception e) {
+            transaction.rollback();
+            throw e;
+        } finally {
+            session.close();
+        }
+    }
 }

@@ -7,9 +7,11 @@ import java.util.List;
 
 public interface BookingRepository {
     StoredBooking createBooking(StoredBooking booking);
-    StoredBooking getBooking(Long id);
+    StoredBooking getBooking(long bookingId);
     List<StoredBooking> getAllBookings();
     StoredBooking updateBooking(StoredBooking booking);
-    void deleteBooking(Long id);
+    void deleteBooking(Long bookingId);
     List<StoredBooking> findBookingsByLocation(Location location);
+
+    List<StoredBooking> findAllPendingBookings();
 }

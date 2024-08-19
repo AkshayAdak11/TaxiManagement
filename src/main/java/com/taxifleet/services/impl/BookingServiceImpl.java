@@ -23,23 +23,22 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public void publishBooking(StoredBooking storedBooking) {
-//        messagingService.publishBooking(bookingTaxis);
         messagingService.notifyTaxis(storedBooking);
     }
 
 
     @Override
-    public List<com.taxifleet.db.StoredBooking> getBookings() {
+    public List<StoredBooking> getBookings() {
         return bookingRepository.getAllBookings();
     }
 
     @Override
-    public com.taxifleet.db.StoredBooking getBooking(Long id) {
+    public StoredBooking getBooking(long id) {
         return bookingRepository.getBooking(id);
     }
 
     @Override
-    public com.taxifleet.db.StoredBooking createBooking(StoredBooking storedBooking) {
+    public StoredBooking createBooking(StoredBooking storedBooking) {
         return bookingRepository.createBooking(storedBooking);
     }
 
@@ -50,7 +49,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public void cancelBooking(StoredBooking storedBooking) {
-        com.taxifleet.db.StoredBooking booking = bookingRepository.getBooking(storedBooking.getId());
+        StoredBooking booking = bookingRepository.getBooking(storedBooking.getBookingId());
         if (booking != null) {
             booking.setStatus(BookingStatus.CANCELLED);
             bookingRepository.updateBooking(booking);
@@ -62,5 +61,11 @@ public class BookingServiceImpl implements BookingService {
         storedBooking.setStatus(BookingStatus.COMPLETED);
         storedBooking.setTaxiId(taxiId);
         bookingRepository.updateBooking(storedBooking);
+    }
+
+
+    @Override
+    public List<StoredBooking> allPendingBooking() {
+        return bookingRepository.findAllPendingBookings();
     }
 }

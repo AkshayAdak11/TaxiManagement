@@ -3,6 +3,7 @@ import com.taxifleet.enums.BookingStatus;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Data
 @Entity
@@ -12,7 +13,7 @@ public class StoredBooking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "booking_id", unique = true)
+    @Column(name = "booking_id", unique = true, nullable = false)
     private Long bookingId;
 
     @Column(name = "taxi_id")
@@ -32,4 +33,17 @@ public class StoredBooking {
     @Version
     @Column(name = "version")
     private Long version;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StoredBooking that = (StoredBooking) o;
+        return Objects.equals(bookingId, that.bookingId) && status == that.status;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, bookingId, taxiId, latitude, longitude, status, version);
+    }
 }

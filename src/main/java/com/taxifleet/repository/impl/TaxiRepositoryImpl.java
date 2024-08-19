@@ -25,8 +25,8 @@ public class TaxiRepositoryImpl implements TaxiRepository {
     }
 
     @Override
-    public StoredTaxi getTaxi(Long id) {
-        return taxiDAO.findById(id);
+    public StoredTaxi getTaxi(String taxiNumber) {
+        return taxiDAO.findByTaxiNumber(taxiNumber);
     }
 
     @Override
@@ -40,16 +40,16 @@ public class TaxiRepositoryImpl implements TaxiRepository {
     }
 
     @Override
-    public void deleteTaxi(Long id) {
-        StoredTaxi taxi = taxiDAO.findById(id);
+    public void deleteTaxi(String taxiNumber) {
+        StoredTaxi taxi = taxiDAO.findByTaxiNumber(taxiNumber);
         if (taxi != null) {
             taxiDAO.delete(taxi);
         }
     }
 
     @Override
-    public void setTaxiAvailability(Long id, boolean available) {
-        StoredTaxi taxi = taxiDAO.findById(id);
+    public void setTaxiAvailability(String taxiNumber, boolean available) {
+        StoredTaxi taxi = taxiDAO.findByTaxiNumber(taxiNumber);
         if (taxi != null) {
             taxi.setAvailable(available);
             taxiDAO.update(taxi);

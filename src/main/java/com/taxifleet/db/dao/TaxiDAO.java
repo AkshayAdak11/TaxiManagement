@@ -42,20 +42,21 @@ public class TaxiDAO {
         }
     }
 
-    public StoredTaxi findById(Long id) {
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
-        try {
-            StoredTaxi result = session.get(StoredTaxi.class, id);
-            transaction.commit();
-            return result;
-        } catch (Exception e) {
-            transaction.rollback();
-            throw e;
-        } finally {
-            session.close();
-        }
-    }
+//
+//    public StoredTaxi findById(String taxiNumber) {
+//        Session session = sessionFactory.openSession();
+//        Transaction transaction = session.beginTransaction();
+//        try {
+//            StoredTaxi result = session.get(StoredTaxi.class, taxiNumber);
+//            transaction.commit();
+//            return result;
+//        } catch (Exception e) {
+//            transaction.rollback();
+//            throw e;
+//        } finally {
+//            session.close();
+//        }
+//    }
 
     public StoredTaxi create(StoredTaxi taxi) {
         Session session = sessionFactory.openSession();
@@ -101,11 +102,11 @@ public class TaxiDAO {
         }
     }
 
-    public void updateLocation(Long id, Location location) {
+    public void updateLocation(String taxiNumber, Location location) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         try {
-            StoredTaxi taxi = findById(id);
+            StoredTaxi taxi = findByTaxiNumber(taxiNumber);
             if (taxi != null) {
                 taxi.setLatitude(location.getLatitude());
                 taxi.setLongitude(location.getLongitude());
@@ -153,6 +154,26 @@ public class TaxiDAO {
                     )
             );
             List<StoredTaxi> result = session.createQuery(criteria).getResultList();
+            transaction.commit();
+            return result;
+        } catch (Exception e) {
+            transaction.rollback();
+            throw e;
+        } finally {
+            session.close();
+        }
+    }
+
+
+    public StoredTaxi findByTaxiNumber(String taxiNumber) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        try {
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<StoredTaxi> criteria = builder.createQuery(StoredTaxi.class);
+            Root<StoredTaxi> root = criteria.from(StoredTaxi.class);
+            criteria.select(root).where(builder.equal(root.get("taxiNumber"), taxiNumber));
+            StoredTaxi result = session.createQuery(criteria).uniqueResult();
             transaction.commit();
             return result;
         } catch (Exception e) {

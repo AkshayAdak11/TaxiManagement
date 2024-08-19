@@ -2,6 +2,7 @@ package com.taxifleet;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.taxifleet.cronjob.BookingProcessor;
 import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredDashboard;
 import com.taxifleet.db.StoredTaxi;
@@ -12,6 +13,7 @@ import com.taxifleet.module.TaxiFleetModule;
 import com.taxifleet.resources.BookingResource;
 import com.taxifleet.resources.DashboardResource;
 import com.taxifleet.resources.TaxiResource;
+import com.taxifleet.services.BookingService;
 import com.taxifleet.utils.TaxiFleetExceptionMapper;
 import in.vectorpro.dropwizard.swagger.SwaggerBundle;
 import in.vectorpro.dropwizard.swagger.SwaggerBundleConfiguration;
@@ -65,5 +67,12 @@ public class TaxiFleetApplication extends Application<TaxiFleetConfiguration> {
         environment.jersey().register(dashboardResource);
         environment.jersey().register(TaxiFleetExceptionMapper.class);
         environment.jersey().register(RolesAllowedDynamicFeature.class);
+
+        // Instantiate and start the BookingProcessor
+        BookingService bookingService = injector.getInstance(BookingService.class);
+        BookingProcessor bookingProcessor = new BookingProcessor(bookingService);
+        bookingProcessor.startProcessing();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(bookingProcessor::shutdown));
     }
 }

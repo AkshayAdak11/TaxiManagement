@@ -24,7 +24,7 @@ public class CentralizedBookingServiceImpl implements CentralizedBookingService 
 
     @Override
     public boolean assignBookingToTaxi(StoredTaxi taxi, StoredBooking storedBooking) {
-        long bookingId = storedBooking.getId();
+        long bookingId = storedBooking.getBookingId();
         if (Objects.isNull(bookingAssignments.get(bookingId))) {
             return bookingAssignments.putIfAbsent(bookingId, taxi) == null;
         }

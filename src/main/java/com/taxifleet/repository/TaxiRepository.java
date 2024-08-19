@@ -8,11 +8,11 @@ import java.util.List;
 
 public interface TaxiRepository {
     List<StoredTaxi> getAllTaxis();
-    StoredTaxi getTaxi(Long id);
+    StoredTaxi getTaxi(String taxiNumber);
     StoredTaxi createTaxi(StoredTaxi taxi);
     StoredTaxi updateTaxi(StoredTaxi taxi);
-    void deleteTaxi(Long id);
-    void setTaxiAvailability(Long id, boolean available);
+    void deleteTaxi(String taxiNumber);
+    void setTaxiAvailability(String taxiNumber, boolean available);
     List<StoredTaxi> findNearbyTaxis(Double latitude, Double longitude, Double radius);
     StoredTaxi findNearByAvailableTaxi(Double latitude, Double longitude, Double radius);
 }

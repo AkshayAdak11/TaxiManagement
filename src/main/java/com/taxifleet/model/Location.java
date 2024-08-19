@@ -19,17 +19,6 @@ public class Location {
         this.longitude = longitude;
     }
 
-    // Method to check if two locations are near each other
-    public boolean isNear(Location otherLocation) {
-        // Define a threshold for "nearness"
-        final double NEAR_THRESHOLD = 0.01; // Example threshold in degrees
-
-        double latDiff = Math.abs(this.latitude - otherLocation.latitude);
-        double lonDiff = Math.abs(this.longitude - otherLocation.longitude);
-
-        return latDiff < NEAR_THRESHOLD && lonDiff < NEAR_THRESHOLD;
-    }
-
     public double distanceTo(double latitude, double longitude) {
         double latDiff = this.latitude - latitude;
         double lonDiff = this.longitude - longitude;

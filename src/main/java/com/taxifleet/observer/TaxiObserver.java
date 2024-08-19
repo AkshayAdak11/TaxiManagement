@@ -3,12 +3,14 @@ package com.taxifleet.observer;
 
 import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredTaxi;
+import com.taxifleet.enums.BookingStatus;
 import com.taxifleet.enums.TaxiStatus;
 import com.taxifleet.services.CentralizedBookingService;
 import com.taxifleet.strategy.BookingAssignmentStrategy;
 import lombok.Data;
 
 import javax.inject.Inject;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -29,18 +31,21 @@ public class TaxiObserver {
 
     public void update(StoredBooking storedBooking) {
         //Push in map according to pattern strategy
-        if (this.assignmentStrategy.isEligibleToServeBooking(taxi, storedBooking)) {
-            availableBookings.put(storedBooking, true);
+        if (availableBookings.isEmpty() || !availableBookings.containsKey(storedBooking)) {
+            if (this.assignmentStrategy.isEligibleToServeBooking(taxi, storedBooking)) {
+                availableBookings.put(storedBooking, true);
+            }
         }
     }
 
     public boolean selectBooking(StoredBooking storedBooking) {
-        if (Boolean.TRUE.equals(availableBookings.get(storedBooking))) {
+        if (Boolean.TRUE.equals(availableBookings.get(storedBooking)) && BookingStatus.PENDING.equals(storedBooking.getStatus())) {
             // Attempt booking to this taxi using the centralized service
             boolean assigned = centralizedBookingService.assignBookingToTaxi(taxi, storedBooking);
             if (assigned) {
                 if (assignBooking(storedBooking)) {
                     //Remove booking from all observers map
+                    storedBooking.setStatus(BookingStatus.COMPLETED);
                     centralizedBookingService.notifyObserversBookingCompleted(storedBooking);
                     centralizedBookingService.removeBookingFromAssignment(storedBooking);
                     return true;

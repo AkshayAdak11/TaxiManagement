@@ -28,16 +28,16 @@ public class BookingResource {
     @GET
     @UnitOfWork
     @Operation(summary = "Returns a list of all bookings")
-    public List<com.taxifleet.db.StoredBooking> getBookings() {
+    public List<StoredBooking> getBookings() {
         return bookingService.getBookings();
     }
 
     @GET
-    @Path("/{id}")
+    @Path("/{bookingId}")
     @Operation(summary = "Returns a booking by its ID")
-    public com.taxifleet.db.StoredBooking getBooking(
-            @ApiParam(value = "ID of the booking to fetch", required = true) @PathParam("id") Long id) {
-        return bookingService.getBooking(id);
+    public StoredBooking getBooking(
+            @ApiParam(value = "ID of the booking to fetch", required = true) @PathParam("bookingId") long bookingId) {
+        return bookingService.getBooking(bookingId);
     }
 
     @POST
@@ -45,19 +45,19 @@ public class BookingResource {
     @Operation(summary = "Creates a new booking and returns the created booking")
     @Path("/create")
     @UnitOfWork
-    public com.taxifleet.db.StoredBooking createBooking(
+    public StoredBooking createBooking(
             @ApiParam(value = "Booking creation", required = true) StoredBooking storedBooking) {
-        com.taxifleet.db.StoredBooking newStoredBooking = bookingService.createBooking(storedBooking);
+        StoredBooking newStoredBooking = bookingService.createBooking(storedBooking);
         bookingService.publishBooking(storedBooking);
         return newStoredBooking;
     }
 
     @DELETE
     @UnitOfWork
-    @Path("/{id}")
+    @Path("/{bookingId}")
     @Operation(summary = "Deletes a booking by its ID")
     public void deleteBooking(
-            @ApiParam(value = "ID of the booking to delete", required = true) @PathParam("id") Long id) {
-        bookingService.deleteBooking(id);
+            @ApiParam(value = "ID of the booking to delete", required = true) @PathParam("bookingId") Long bookingId) {
+        bookingService.deleteBooking(bookingId);
     }
 }

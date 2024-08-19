@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 @Singleton
 public class CachedTaxiServiceImpl implements CachedTaxiService {
-    private final Cache<Long, StoredTaxi> taxiCache;
+    private final Cache<String, StoredTaxi> taxiCache;
     private final TaxiRepository taxiRepository;
     private final MessagingService messagingService;
     private final TaxiObserverFactory taxiObserverFactory;
@@ -33,7 +33,9 @@ public class CachedTaxiServiceImpl implements CachedTaxiService {
 
     @Inject
     public CachedTaxiServiceImpl(TaxiRepository taxiRepository,
-                                 MessagingService messagingService, TaxiObserverFactory taxiObserverFactory, BookingService bookingService) {
+                                 MessagingService messagingService,
+                                 TaxiObserverFactory taxiObserverFactory,
+                                 BookingService bookingService) {
         this.taxiRepository = taxiRepository;
         this.messagingService = messagingService;
         this.taxiObserverFactory = taxiObserverFactory;
@@ -47,17 +49,17 @@ public class CachedTaxiServiceImpl implements CachedTaxiService {
     @Override
     public List<StoredTaxi> getAllTaxis() {
         List<StoredTaxi> taxis = taxiRepository.getAllTaxis();
-        taxis.forEach(taxi -> taxiCache.put(taxi.getId(), taxi));
+        taxis.forEach(taxi -> taxiCache.put(taxi.getTaxiNumber(), taxi));
         return taxis;
     }
 
     @Override
-    public StoredTaxi getTaxi(Long id) {
-        StoredTaxi taxi = taxiCache.getIfPresent(id);
+    public StoredTaxi getTaxi(String taxiNumber) {
+        StoredTaxi taxi = taxiCache.getIfPresent(taxiNumber);
         if (taxi == null) {
-            taxi = taxiRepository.getTaxi(id);
+            taxi = taxiRepository.getTaxi(taxiNumber);
             if (taxi != null) {
-                taxiCache.put(id, taxi);
+                taxiCache.put(taxiNumber, taxi);
             }
         }
         return taxi;
@@ -66,7 +68,7 @@ public class CachedTaxiServiceImpl implements CachedTaxiService {
     @Override
     public StoredTaxi createTaxi(StoredTaxi taxi) {
         StoredTaxi createdTaxi = taxiRepository.createTaxi(taxi);
-        taxiCache.put(createdTaxi.getId(), createdTaxi);
+        taxiCache.put(createdTaxi.getTaxiNumber(), createdTaxi);
         return createdTaxi;
     }
 
@@ -83,23 +85,23 @@ public class CachedTaxiServiceImpl implements CachedTaxiService {
     @Override
     public StoredTaxi updateTaxi(StoredTaxi taxi) {
         StoredTaxi updatedTaxi = taxiRepository.updateTaxi(taxi);
-        taxiCache.put(updatedTaxi.getId(), updatedTaxi);
+        taxiCache.put(updatedTaxi.getTaxiNumber(), updatedTaxi);
         return updatedTaxi;
     }
 
     @Override
-    public void deleteTaxi(Long id) {
-        taxiRepository.deleteTaxi(id);
-        taxiCache.invalidate(id);
+    public void deleteTaxi(String taxiNumber) {
+        taxiRepository.deleteTaxi(taxiNumber);
+        taxiCache.invalidate(taxiNumber);
     }
 
     @Override
-    public void setTaxiAvailability(Long id, boolean available) {
-        StoredTaxi taxi = taxiRepository.getTaxi(id);
+    public void setTaxiAvailability(String taxiNumber, boolean available) {
+        StoredTaxi taxi = taxiRepository.getTaxi(taxiNumber);
         if (taxi != null) {
             taxi.setAvailable(available);
             taxiRepository.updateTaxi(taxi);
-            taxiCache.invalidate(id);
+            taxiCache.invalidate(taxiNumber);
         }
     }
 
@@ -142,8 +144,16 @@ public class CachedTaxiServiceImpl implements CachedTaxiService {
     }
 
     @Override
-    public boolean subscribeTaxiToBookings(Long taxiId, BookingStrategy bookingStrategy) {
-        StoredTaxi taxi = getTaxi(taxiId);
+    public boolean subscribeTaxiToBookings(String taxiNumber, BookingStrategy bookingStrategy) {
+        // Check if a TaxiObserver for the given taxiNumber already exists
+        boolean observerExists = taxiObservers.stream()
+                .anyMatch(observer -> observer.getTaxi().getTaxiNumber().equals(taxiNumber));
+
+        if (observerExists) {
+            return false;
+        }
+
+        StoredTaxi taxi = getTaxi(taxiNumber);
         BookingAssignmentStrategy bookingAssignmentStrategy = messagingService.createStrategy(bookingStrategy);
         if (taxi != null) {
             TaxiObserver observer = taxiObserverFactory.createObserver(taxi, bookingAssignmentStrategy);
@@ -154,8 +164,8 @@ public class CachedTaxiServiceImpl implements CachedTaxiService {
     }
 
     @Override
-    public boolean unsubscribeTaxiToBookings(Long taxiId) {
-        return taxiObservers.removeIf(observer -> observer.getTaxi().getId().equals(taxiId));
+    public boolean unsubscribeTaxiToBookings(String taxiNumber) {
+        return taxiObservers.removeIf(observer -> observer.getTaxi().getTaxiNumber().equals(taxiNumber));
     }
 
     public void notifyTaxis(StoredBooking storedBooking) {
@@ -165,13 +175,18 @@ public class CachedTaxiServiceImpl implements CachedTaxiService {
     }
 
     @Override
-    public void notifyTaxiAboutBooking(StoredTaxi taxi, StoredBooking storedBooking) {
-
+    public boolean selectBooking(String taxiId, long bookingId) {
+        return false;
     }
 
     @Override
-    public boolean selectBooking(long taxiId, long bookingId) {
-        return false;
+    public List<StoredBooking> getAllBookingsAsPerChoice(String taxiNumber) {
+        for (TaxiObserver observer : taxiObservers) {
+            if (observer.getTaxi().getTaxiNumber().equals(taxiNumber)) {
+                return new ArrayList<>(observer.getAvailableBookings().keySet());
+            }
+        }
+        return new ArrayList<>();
     }
 
     @Override
@@ -180,7 +195,12 @@ public class CachedTaxiServiceImpl implements CachedTaxiService {
     }
 
     @Override
-    public TaxiObserver getTaxiObserver(long taxiId) {
+    public TaxiObserver getTaxiObserver(String taxiNumber) {
+        for (TaxiObserver observer : taxiObservers) {
+            if (observer.getTaxi().getTaxiNumber().equals(taxiNumber)) {
+            return observer;
+            }
+        }
         return null;
     }
 

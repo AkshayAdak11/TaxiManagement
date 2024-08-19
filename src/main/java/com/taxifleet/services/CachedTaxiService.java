@@ -10,31 +10,30 @@ import java.util.List;
 
 public interface CachedTaxiService {
     List<StoredTaxi> getAllTaxis();
-    StoredTaxi getTaxi(Long id);
+    StoredTaxi getTaxi(String taxiNumber);
     StoredTaxi createTaxi(StoredTaxi taxi);
     boolean bookTaxi(StoredTaxi taxi, long bookingId);
     StoredTaxi updateTaxi(StoredTaxi taxi);
-    void deleteTaxi(Long id);
-    void setTaxiAvailability(Long id, boolean available);
+    void deleteTaxi(String taxiNumber);
+    void setTaxiAvailability(String taxiNumber, boolean available);
     List<StoredTaxi> findNearbyTaxis(Double latitude, Double longitude, Double radius);
     StoredTaxi findNearByAvailableTaxi(Double latitude, Double longitude, Double radius);
     void updateTaxiStatus(StoredTaxi taxi, TaxiStatus status);
     boolean isTaxiAvailable(); // New method
     StoredTaxi getTaxiAvailable();
 
-    boolean subscribeTaxiToBookings(Long taxiId, BookingStrategy strategy);
+    boolean subscribeTaxiToBookings(String taxiNumber, BookingStrategy strategy);
 
-    boolean unsubscribeTaxiToBookings(Long taxiId);
+    boolean unsubscribeTaxiToBookings(String taxiNumber);
 
     void notifyTaxis(StoredBooking storedBooking);
 
-    void notifyTaxiAboutBooking(StoredTaxi taxi, StoredBooking storedBooking);
+    boolean selectBooking(String taxiId, long bookingId);
 
-    boolean selectBooking(long taxiId, long bookingId);
-
+    List<StoredBooking> getAllBookingsAsPerChoice(String taxiId);
 
     StoredBooking getBookingTaxis(long bookingId);
-    TaxiObserver getTaxiObserver(long taxiId);
+    TaxiObserver getTaxiObserver(String taxiNumber);
 
     List<TaxiObserver> getAllTaxiObserver();
 }

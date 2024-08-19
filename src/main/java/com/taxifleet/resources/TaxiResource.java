@@ -37,16 +37,16 @@ public class TaxiResource {
     }
 
     @GET
-    @Path("/{id}")
+    @Path("/{taxiNumber}")
     @Operation(summary = "Returns a taxi by its ID")
     @UnitOfWork
     public StoredTaxi getTaxi(
-            @ApiParam(value = "ID of the taxi to fetch", required = true) @PathParam("id") Long id) {
-        return cachedTaxiService.getTaxi(id);
+            @ApiParam(value = "ID of the taxi to fetch", required = true) @PathParam("taxiNumber") String taxiNumber) {
+        return cachedTaxiService.getTaxi(taxiNumber);
     }
 
     @POST
-    @Operation(summary =  "Creates a new taxi and returns the created taxi")
+    @Operation(summary = "Creates a new taxi and returns the created taxi")
     @UnitOfWork
     public StoredTaxi createTaxi(
             @ApiParam(value = "Add Taxi ", required = true) StoredTaxi taxi) {
@@ -55,21 +55,21 @@ public class TaxiResource {
 
     @PUT
     @Path("/{id}/availability")
-    @Operation(summary =  "Sets the availability of a taxi by its ID")
+    @Operation(summary = "Sets the availability of a taxi by its ID")
     @UnitOfWork
     public void setTaxiAvailability(
-            @ApiParam(value = "Get Taxi By ID", required = true) @PathParam("id") Long id,
+            @ApiParam(value = "Get Taxi By ID", required = true) @PathParam("taxiNumber") String taxiNumber,
             @ApiParam(value = "Availability status to set", required = true) @QueryParam("available") boolean available) {
-        cachedTaxiService.setTaxiAvailability(id, available);
+        cachedTaxiService.setTaxiAvailability(taxiNumber, available);
     }
 
     @DELETE
-    @Path("/{id}")
-    @Operation(summary =  "Deletes a taxi by its ID")
+    @Path("/{taxiNumber}")
+    @Operation(summary = "Deletes a taxi by its ID")
     @UnitOfWork
     public void deleteTaxi(
-            @ApiParam(value = "ID of the taxi to delete", required = true) @PathParam("id") Long id) {
-        cachedTaxiService.deleteTaxi(id);
+            @ApiParam(value = "ID of the taxi to delete", required = true) @PathParam("taxiNumber") String taxiNumber) {
+        cachedTaxiService.deleteTaxi(taxiNumber);
     }
 
     @GET
@@ -83,26 +83,24 @@ public class TaxiResource {
     }
 
 
-//    @GET
-//    @Path("/nearby/booking")
-//    @UnitOfWork
-//    public Response getNearbyTaxis(@QueryParam("bookinId") String bookingId,
-//                                   @QueryParam("") Double longitude,
-//                                   @QueryParam("radius") Double radius) {
-//        List<StoredTaxi> taxis = cachedTaxiService.findNearbyTaxis(latitude, longitude, radius);
-//        return Response.ok(taxis).build();
-//    }
+    @GET
+    @Path("/all/booking/assigned")
+    @UnitOfWork
+    public Response getAssignedBookingAsPerChoice(@QueryParam("taxiNumber") String taxiNumber) {
+        List<StoredBooking> storedBookings = cachedTaxiService.getAllBookingsAsPerChoice(taxiNumber);
+        return Response.ok(storedBookings).build();
+    }
 
 
     @POST
-    @Path("/{id}/subscribe")
+    @Path("/{taxiNumber}/subscribe")
     @Operation(summary = "Subscribe a taxi to booking notifications with a chosen strategy")
     @UnitOfWork
     public Response subscribeTaxi(
-            @ApiParam(value = "Taxi ID", required = true) @PathParam("id") Long taxiId,
+            @ApiParam(value = "Taxi ID", required = true) @PathParam("taxiNumber") String taxiNumber,
             @ApiParam(value = "Strategy Type", required = true) @QueryParam("strategy") BookingStrategy strategyType) {
 
-        boolean subscribed = cachedTaxiService.subscribeTaxiToBookings(taxiId, strategyType);
+        boolean subscribed = cachedTaxiService.subscribeTaxiToBookings(taxiNumber, strategyType);
         if (subscribed) {
             return Response.ok()
                     .entity("Taxi subscribed successfully with strategy: " + strategyType)
@@ -115,9 +113,9 @@ public class TaxiResource {
     }
 
     @POST
-    @Path("/{id}/unsubscribe")
-    public Response unsubscribeFromBookings(@PathParam("id") Long taxiId) {
-        boolean subscribed = cachedTaxiService.unsubscribeTaxiToBookings(taxiId);
+    @Path("/{taxiNumber}/unsubscribe")
+    public Response unsubscribeFromBookings(@PathParam("taxiNumber") String taxiNumber) {
+        boolean subscribed = cachedTaxiService.unsubscribeTaxiToBookings(taxiNumber);
         if (subscribed) {
             return Response.ok().build();
         } else {
@@ -126,15 +124,15 @@ public class TaxiResource {
     }
 
     @POST
-    @Path("/{id}/select-booking")
+    @Path("/{taxiNumber}/{bookingId}/select-booking")
     @Operation(summary = "Select a booking for the taxi")
     @UnitOfWork
     public Response selectBooking(
-            @ApiParam(value = "Taxi ID", required = true) @PathParam("id") Long taxiId,
+            @ApiParam(value = "Taxi ID", required = true) @PathParam("taxiNumber") String taxiNumber,
             @ApiParam(value = "Booking ID", required = true) @QueryParam("bookingId") Long bookingId) {
 
         StoredBooking storedBooking = cachedTaxiService.getBookingTaxis(bookingId);
-        TaxiObserver observer = cachedTaxiService.getTaxiObserver(taxiId);
+        TaxiObserver observer = cachedTaxiService.getTaxiObserver(taxiNumber);
 
         if (observer != null && storedBooking != null) {
             boolean success = observer.selectBooking(storedBooking);
