@@ -16,8 +16,7 @@ import javax.ws.rs.core.Response;
 @Path("/dashboard")
 @Tag(name = "Dashboard", description = "Dashboard for Statistics")
 @Produces(MediaType.APPLICATION_JSON)
-@RolesAllowed({"ADMIN", "USER"})
-
+//@RolesAllowed({"ADMIN", "USER"})
 public class DashboardResource {
 
     private final DashboardService dashboardService;

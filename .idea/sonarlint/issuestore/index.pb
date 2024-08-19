@@ -76,3 +76,5 @@ s
 Csrc/main/java/com/taxifleet/services/impl/MessagingServiceImpl.java,6/d/6d85080bc7b96b02244a8f436c3b9ce68bd259de
 t
 Dsrc/main/java/com/taxifleet/services/impl/CachedTaxiServiceImpl.java,d/8/d87b737461ff1dc5e27353f879e324c9b1402c10
+d
+4src/main/java/com/taxifleet/db/dao/DashboardDAO.java,1/2/12bcf4fabe9d069fcb4ee3f67cff8b496dfc0a28

@@ -19,13 +19,19 @@ public class DashboardDAO {
         this.sessionFactory = sessionFactory;
     }
 
-    public List<StoredDashboard> getAllDashboards() {
+    public StoredDashboard getAllDashboards() {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         try {
             List<StoredDashboard> dashboards = session.createQuery("from StoredDashboard", StoredDashboard.class).list();
             transaction.commit();
-            return dashboards;
+
+            // Assuming there is only one record, return the first (and only) element
+            if (dashboards != null && !dashboards.isEmpty()) {
+                return dashboards.get(0);
+            } else {
+                return null; // or throw an exception if that's your preferred handling
+            }
         } catch (Exception e) {
             transaction.rollback();
             throw e;

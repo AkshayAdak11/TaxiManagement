@@ -7,10 +7,14 @@ import com.taxifleet.services.DashboardService;
 import io.dropwizard.hibernate.UnitOfWork;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.transaction.Transactional;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+@Singleton
 public class DashboardServiceImpl implements DashboardService {
 
     private final DashboardDAO dashboardDAO;
@@ -23,36 +27,58 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Transactional
     public void updateDashboardStats(BookingStatus status) {
-        long totalBookings = getTotalBookings();
-        long totalCompletedBookings = getTotalCompletedBookings();
-        long totalPendingBookings = getTotalPendingBookings();
+        // Fetch the existing dashboard record
+        StoredDashboard dashboard = dashboardDAO.getAllDashboards();
 
-        if (BookingStatus.PENDING.equals(status)) {
-            totalPendingBookings++;
-        } else if (BookingStatus.COMPLETED.equals(status)) {
-            totalCompletedBookings++;
-        } else if (BookingStatus.CANCELLED.equals(status)) {
-            totalPendingBookings--;
+        if (dashboard == null) {
+            dashboard = new StoredDashboard();
+            dashboard.setTotalBookings(1);
+            dashboard.setTotalCompletedBookings(0);
+            dashboard.setTotalPendingBookings(1);
+
+        } else {
+
+            long totalCompletedBookings = getTotalCompletedBookings();
+            long totalPendingBookings = getTotalPendingBookings();
+
+            // Update statistics based on the booking status
+            if (BookingStatus.PENDING.equals(status)) {
+                totalPendingBookings++;
+            } else if (BookingStatus.COMPLETED.equals(status)) {
+                totalCompletedBookings++;
+                totalPendingBookings--;
+            } else if (BookingStatus.CANCELLED.equals(status)) {
+                totalPendingBookings--;
+            }
+
+            long totalBookings = totalPendingBookings + totalCompletedBookings;
+
+            dashboard.setTotalBookings(totalBookings);
+            dashboard.setTotalCompletedBookings(totalCompletedBookings);
+            dashboard.setTotalPendingBookings(totalPendingBookings);
         }
 
-        StoredDashboard dashboard = new StoredDashboard(totalBookings, totalCompletedBookings, totalPendingBookings);
+        // Save or update the dashboard record in the database
         dashboardDAO.saveOrUpdateDashboard(dashboard);
+        if (!dashboardQueue.isEmpty()) {
+            dashboardQueue.remove();
+        }
         dashboardQueue.offer(dashboard);
     }
 
     @UnitOfWork
     public long getTotalBookings() {
-        return dashboardDAO.getAllDashboards().stream().mapToLong(StoredDashboard::getTotalBookings).sum();
+        return dashboardDAO.getAllDashboards().getTotalBookings();
     }
 
     @UnitOfWork
     public long getTotalCompletedBookings() {
-        return dashboardDAO.getAllDashboards().stream().mapToLong(StoredDashboard::getTotalCompletedBookings).sum();
+        return dashboardDAO.getAllDashboards().getTotalCompletedBookings();
     }
 
     @UnitOfWork
     public long getTotalPendingBookings() {
-        return dashboardDAO.getAllDashboards().stream().mapToLong(StoredDashboard::getTotalPendingBookings).sum();
+        return dashboardDAO.getAllDashboards().getTotalPendingBookings();
     }
 
     public StoredDashboard getLatestDashboardStats() {
