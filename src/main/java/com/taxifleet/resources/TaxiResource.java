@@ -1,6 +1,9 @@
 package com.taxifleet.resources;
 
+import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredTaxi;
+import com.taxifleet.enums.BookingStrategy;
+import com.taxifleet.observer.TaxiObserver;
 import com.taxifleet.services.CachedTaxiService;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.swagger.annotations.ApiParam;
@@ -77,5 +80,71 @@ public class TaxiResource {
                                    @QueryParam("radius") Double radius) {
         List<StoredTaxi> taxis = cachedTaxiService.findNearbyTaxis(latitude, longitude, radius);
         return Response.ok(taxis).build();
+    }
+
+
+//    @GET
+//    @Path("/nearby/booking")
+//    @UnitOfWork
+//    public Response getNearbyTaxis(@QueryParam("bookinId") String bookingId,
+//                                   @QueryParam("") Double longitude,
+//                                   @QueryParam("radius") Double radius) {
+//        List<StoredTaxi> taxis = cachedTaxiService.findNearbyTaxis(latitude, longitude, radius);
+//        return Response.ok(taxis).build();
+//    }
+
+
+    @POST
+    @Path("/{id}/subscribe")
+    @Operation(summary = "Subscribe a taxi to booking notifications with a chosen strategy")
+    @UnitOfWork
+    public Response subscribeTaxi(
+            @ApiParam(value = "Taxi ID", required = true) @PathParam("id") Long taxiId,
+            @ApiParam(value = "Strategy Type", required = true) @QueryParam("strategy") BookingStrategy strategyType) {
+
+        boolean subscribed = cachedTaxiService.subscribeTaxiToBookings(taxiId, strategyType);
+        if (subscribed) {
+            return Response.ok()
+                    .entity("Taxi subscribed successfully with strategy: " + strategyType)
+                    .build();
+        } else {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Failed to subscribe taxi with strategy: " + strategyType)
+                    .build();
+        }
+    }
+
+    @POST
+    @Path("/{id}/unsubscribe")
+    public Response unsubscribeFromBookings(@PathParam("id") Long taxiId) {
+        boolean subscribed = cachedTaxiService.unsubscribeTaxiToBookings(taxiId);
+        if (subscribed) {
+            return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+
+    @POST
+    @Path("/{id}/select-booking")
+    @Operation(summary = "Select a booking for the taxi")
+    @UnitOfWork
+    public Response selectBooking(
+            @ApiParam(value = "Taxi ID", required = true) @PathParam("id") Long taxiId,
+            @ApiParam(value = "Booking ID", required = true) @QueryParam("bookingId") Long bookingId) {
+
+        StoredBooking storedBooking = cachedTaxiService.getBookingTaxis(bookingId);
+        TaxiObserver observer = cachedTaxiService.getTaxiObserver(taxiId);
+
+        if (observer != null && storedBooking != null) {
+            boolean success = observer.selectBooking(storedBooking);
+            if (success) {
+                return Response.ok().entity("Booking selected successfully").build();
+            } else {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Failed to select booking").build();
+            }
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).entity("Taxi or booking not found").build();
+        }
     }
 }

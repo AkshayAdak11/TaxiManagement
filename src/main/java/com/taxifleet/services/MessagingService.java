@@ -1,7 +1,14 @@
 package com.taxifleet.services;
 
-import com.taxifleet.model.BookingTaxis;
+import com.taxifleet.db.StoredBooking;
+import com.taxifleet.enums.BookingStrategy;
+import com.taxifleet.strategy.BookingAssignmentStrategy;
 
 public interface MessagingService {
-    void publishBooking(BookingTaxis bookingTaxis);
+    void publishBooking(StoredBooking storedBooking);
+
+    void notifyTaxis(StoredBooking storedBooking);
+
+    BookingAssignmentStrategy createStrategy(BookingStrategy strategy);
+
 }

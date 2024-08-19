@@ -2,24 +2,42 @@ package com.taxifleet.services.impl;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredTaxi;
+import com.taxifleet.enums.BookingStrategy;
 import com.taxifleet.enums.TaxiStatus;
+import com.taxifleet.factory.TaxiObserverFactory;
 import com.taxifleet.model.Location;
+import com.taxifleet.observer.TaxiObserver;
 import com.taxifleet.repository.TaxiRepository;
+import com.taxifleet.services.BookingService;
 import com.taxifleet.services.CachedTaxiService;
+import com.taxifleet.services.MessagingService;
+import com.taxifleet.strategy.BookingAssignmentStrategy;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+@Singleton
 public class CachedTaxiServiceImpl implements CachedTaxiService {
     private final Cache<Long, StoredTaxi> taxiCache;
     private final TaxiRepository taxiRepository;
+    private final MessagingService messagingService;
+    private final TaxiObserverFactory taxiObserverFactory;
+    private final List<TaxiObserver> taxiObservers = new ArrayList<>();
+    private final BookingService bookingService;
 
     @Inject
-    public CachedTaxiServiceImpl(TaxiRepository taxiRepository) {
+    public CachedTaxiServiceImpl(TaxiRepository taxiRepository,
+                                 MessagingService messagingService, TaxiObserverFactory taxiObserverFactory, BookingService bookingService) {
         this.taxiRepository = taxiRepository;
+        this.messagingService = messagingService;
+        this.taxiObserverFactory = taxiObserverFactory;
+        this.bookingService = bookingService;
         this.taxiCache = Caffeine.newBuilder()
                 .expireAfterWrite(10, TimeUnit.MINUTES)
                 .maximumSize(100)
@@ -54,7 +72,7 @@ public class CachedTaxiServiceImpl implements CachedTaxiService {
 
 
     @Override
-    public boolean bookTaxi(StoredTaxi taxi, long bookingID) {
+    public synchronized boolean bookTaxi(StoredTaxi taxi, long bookingID) {
         taxi.setAvailable(false);
         taxi.setBookingId(bookingID);
         taxi.setStatus(TaxiStatus.BOOKED);
@@ -115,10 +133,59 @@ public class CachedTaxiServiceImpl implements CachedTaxiService {
                 .anyMatch(taxi -> taxi.isAvailable() && TaxiStatus.AVAILABLE.equals(taxi.getStatus()));
     }
 
-    public StoredTaxi getTaxiAvailable() {
+    public synchronized StoredTaxi getTaxiAvailable() {
+        //BOOKING in PROGRESS
         return taxiRepository.getAllTaxis().stream()
                 .filter(taxi -> taxi.isAvailable() && TaxiStatus.AVAILABLE.equals(taxi.getStatus()))
                 .findFirst()
                 .orElse(null);
+    }
+
+    @Override
+    public boolean subscribeTaxiToBookings(Long taxiId, BookingStrategy bookingStrategy) {
+        StoredTaxi taxi = getTaxi(taxiId);
+        BookingAssignmentStrategy bookingAssignmentStrategy = messagingService.createStrategy(bookingStrategy);
+        if (taxi != null) {
+            TaxiObserver observer = taxiObserverFactory.createObserver(taxi, bookingAssignmentStrategy);
+            taxiObservers.add(observer);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean unsubscribeTaxiToBookings(Long taxiId) {
+        return taxiObservers.removeIf(observer -> observer.getTaxi().getId().equals(taxiId));
+    }
+
+    public void notifyTaxis(StoredBooking storedBooking) {
+        for (TaxiObserver observer : taxiObservers) {
+            observer.update(storedBooking);
+        }
+    }
+
+    @Override
+    public void notifyTaxiAboutBooking(StoredTaxi taxi, StoredBooking storedBooking) {
+
+    }
+
+    @Override
+    public boolean selectBooking(long taxiId, long bookingId) {
+        return false;
+    }
+
+    @Override
+    public StoredBooking getBookingTaxis(long bookingId) {
+        return bookingService.getBooking(bookingId);
+    }
+
+    @Override
+    public TaxiObserver getTaxiObserver(long taxiId) {
+        return null;
+    }
+
+    @Override
+    public List<TaxiObserver> getAllTaxiObserver() {
+        return taxiObservers;
     }
 }

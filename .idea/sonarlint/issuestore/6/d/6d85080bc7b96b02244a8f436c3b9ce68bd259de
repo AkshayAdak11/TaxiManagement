@@ -1,0 +1,12 @@
+
+r	java:S106,"+Replace this use of System.out by a logger.(ÇÌÄÕúÿÿÿÿ8«ğÙ–2J$d11b3b37-932f-4601-b734-6c4170523b5c
+r	java:S106J"+Replace this use of System.out by a logger.(Æî¶ãşÿÿÿÿ8«ğÙ–2J$311b4d14-f1d7-4814-b545-b9ab7238287f
+m	java:S106O"+Replace this use of System.out by a logger.(ä¢»8«ğÙ–2J$44cb8e12-3baf-423d-9d3f-fec5dd0525bd
+l	java:S106V"+Replace this use of System.out by a logger.(‘Ş¯8«ğÙ–2J$a1f5c8ce-10d1-45bf-97b2-f5794f3f230b
+•
+java:S3776Y"RRefactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.(áˆñ™8«ğÙ–2J$9c6bf71e-7dbd-4413-9780-7f1ebdca64c2
+r	java:S106i"+Replace this use of System.err by a logger.(¤‡Ó±şÿÿÿÿ8‘«ğÙ–2J$0467a3b1-c87f-4dfe-a166-c1c8f42bbcc5
+l	java:S106v"+Replace this use of System.err by a logger.(Íƒt8‘«ğÙ–2J$1c929b46-4ec9-4ad0-a04f-20645de0d374
+m	java:S106}"+Replace this use of System.out by a logger.(¹Û×í8‘«ğÙ–2J$a0e53947-0328-4619-8e41-1601c931d8bd
+q
+java:S1128".Remove this unused import 'java.util.Objects'.(¼¸õ›8Ï§›Ü–2J$56eb3545-4b62-4489-8db0-336744bccc98
