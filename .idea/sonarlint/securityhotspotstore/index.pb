@@ -112,3 +112,5 @@ l
 <src/main/java/com/taxifleet/factory/TaxiObserverFactory.java,f/9/f9bc0bd1c43a68f2fbdde5265f81421c8947390c
 j
 :src/test/java/com/taxifleet/observer/TaxiObserverTest.java,a/e/aea927bff1c63d0b4f7604c045e0b7c4d05bbf07
+d
+4src/main/java/com/taxifleet/cronjob/BookingTask.java,c/5/c5fe5e25a55155d4e730aa76cbd0668181e3787c
