@@ -2,9 +2,11 @@ package com.taxifleet.strategy;
 
 import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredTaxi;
+import com.taxifleet.enums.BookingStatus;
 import com.taxifleet.enums.TaxiStatus;
 import com.taxifleet.services.BookingService;
 import com.taxifleet.services.CachedTaxiService;
+import com.taxifleet.services.DashboardService;
 
 import javax.inject.Inject;
 
@@ -12,11 +14,15 @@ public class AllDistanceBasedAssignmentStrategy implements BookingAssignmentStra
     private final CachedTaxiService cachedTaxiService;
     private final BookingService bookingService;
 
+    private final DashboardService dashboardService;
+
     @Inject
     public AllDistanceBasedAssignmentStrategy(CachedTaxiService cachedTaxiService,
-                                              BookingService bookingService) {
+                                              BookingService bookingService,
+                                              DashboardService dashboardService) {
         this.cachedTaxiService = cachedTaxiService;
         this.bookingService = bookingService;
+        this.dashboardService = dashboardService;
     }
 
     @Override
@@ -29,6 +35,7 @@ public class AllDistanceBasedAssignmentStrategy implements BookingAssignmentStra
             if (bookedTaxi) {
                 bookingService.confirmBooking(storedBooking, taxi.getTaxiNumber());
             }
+            dashboardService.updateDashboardStats(BookingStatus.COMPLETED);
             return bookedTaxi;
         }
         return false;

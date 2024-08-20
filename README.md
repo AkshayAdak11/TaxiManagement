@@ -89,3 +89,8 @@ Class:
 Flow Diagram
 
 ![img_4.png](img_4.png)
+
+
+Sample Logic 
+
+![img.png](img.png)

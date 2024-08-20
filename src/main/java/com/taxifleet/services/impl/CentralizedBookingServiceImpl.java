@@ -2,6 +2,8 @@ package com.taxifleet.services.impl;
 
 import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredTaxi;
+import com.taxifleet.enums.BookingStatus;
+import com.taxifleet.services.BookingService;
 import com.taxifleet.services.CachedTaxiService;
 import com.taxifleet.services.CentralizedBookingService;
 
@@ -15,11 +17,15 @@ import java.util.concurrent.ConcurrentMap;
 public class CentralizedBookingServiceImpl implements CentralizedBookingService {
 
     private final CachedTaxiService cachedTaxiService;
+
+    private final BookingService bookingService;
     private final ConcurrentMap<Long, StoredTaxi> bookingAssignments = new ConcurrentHashMap<>();
 
     @Inject
-    public CentralizedBookingServiceImpl(CachedTaxiService cachedTaxiService) {
+    public CentralizedBookingServiceImpl(CachedTaxiService cachedTaxiService,
+                                         BookingService bookingService) {
         this.cachedTaxiService = cachedTaxiService;
+        this.bookingService = bookingService;
     }
 
     @Override
@@ -41,5 +47,12 @@ public class CentralizedBookingServiceImpl implements CentralizedBookingService 
     @Override
     public void removeBookingFromAssignment(StoredBooking storedBooking) {
        bookingAssignments.remove(storedBooking.getBookingId());
+    }
+    @Override
+    public void notifyOtherObserversIfBookingIsCompleted(StoredBooking storedBooking) {
+        BookingStatus bookingStatus = bookingService.getBooking(storedBooking.getBookingId()).getStatus();
+        if (!BookingStatus.PENDING.equals(bookingStatus)) {
+            notifyObserversBookingCompleted(storedBooking);
+        }
     }
 }

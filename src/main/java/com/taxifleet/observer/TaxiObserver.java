@@ -34,7 +34,6 @@ public class TaxiObserver {
         if (availableBookings.isEmpty() || !availableBookings.containsKey(storedBooking) &&
                 (this.assignmentStrategy.isEligibleToServeBooking(taxi, storedBooking))) {
                 availableBookings.put(storedBooking, true);
-
         }
     }
 
@@ -45,12 +44,13 @@ public class TaxiObserver {
             if (assigned) {
                 if (assignBooking(storedBooking)) {
                     //Remove booking from all observers map
-                    storedBooking.setStatus(BookingStatus.COMPLETED);
                     centralizedBookingService.notifyObserversBookingCompleted(storedBooking);
                     centralizedBookingService.removeBookingFromAssignment(storedBooking);
                     return true;
                 }
                 centralizedBookingService.removeBookingFromAssignment(storedBooking);
+            } else {
+                centralizedBookingService.notifyOtherObserversIfBookingIsCompleted(storedBooking);
             }
         }
         return false;
@@ -65,6 +65,7 @@ public class TaxiObserver {
 
 
     public void removeBooking(StoredBooking storedBooking) {
+        storedBooking.setStatus(BookingStatus.PENDING);
         availableBookings.remove(storedBooking);
     }
 }

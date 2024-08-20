@@ -8,5 +8,7 @@ public interface CentralizedBookingService {
 
     void notifyObserversBookingCompleted(StoredBooking storedBooking);
 
+    void notifyOtherObserversIfBookingIsCompleted(StoredBooking storedBooking);
+
     void removeBookingFromAssignment(StoredBooking storedBooking);
 }

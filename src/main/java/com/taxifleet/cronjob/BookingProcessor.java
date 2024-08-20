@@ -2,6 +2,7 @@ package com.taxifleet.cronjob;
 
 import com.taxifleet.db.StoredBooking;
 import com.taxifleet.services.BookingService;
+import com.taxifleet.services.DashboardService;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -12,8 +13,12 @@ public class BookingProcessor {
     private final BookingService bookingService;
     private final ScheduledExecutorService executorService;
 
-    public BookingProcessor(BookingService bookingService) {
+    private final DashboardService dashboardService;
+
+    public BookingProcessor(BookingService bookingService,
+                            DashboardService dashboardService) {
         this.bookingService = bookingService;
+        this.dashboardService = dashboardService;
         this.executorService = Executors.newScheduledThreadPool(20);
     }
 
@@ -21,7 +26,7 @@ public class BookingProcessor {
         executorService.scheduleAtFixedRate(() -> {
             List<StoredBooking> pendingBookings = bookingService.allPendingBooking();
             for (StoredBooking booking : pendingBookings) {
-                executorService.submit(new BookingTask(bookingService, booking));
+                executorService.submit(new BookingTask(bookingService, booking, dashboardService));
             }
         }, 0, 1, TimeUnit.MINUTES);
     }

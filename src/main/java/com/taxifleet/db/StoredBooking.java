@@ -44,6 +44,6 @@ public class StoredBooking {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, bookingId, taxiId, latitude, longitude, status, version);
+        return Objects.hash(bookingId);
     }
 }

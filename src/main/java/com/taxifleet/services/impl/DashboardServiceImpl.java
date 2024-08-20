@@ -15,31 +15,62 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Singleton
 public class DashboardServiceImpl implements DashboardService {
 
-    //Implement QUEUE and do all behind it
-
     private final DashboardDAO dashboardDAO;
-    private final BlockingQueue<StoredDashboard> dashboardQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<BookingStatus> dashboardQueue = new LinkedBlockingQueue<>();
 
     @Inject
     public DashboardServiceImpl(DashboardDAO dashboardDAO) {
         this.dashboardDAO = dashboardDAO;
+        startConsumer();  // Start the consumer thread
     }
 
-    @Transactional
+    /**
+     * Adds a dashboard update task to the queue.
+     */
     public void updateDashboardStats(BookingStatus status) {
-        // Fetch the existing dashboard record
+        dashboardQueue.offer(status);
+    }
+
+    /**
+     * Starts a separate thread to consume and process dashboard updates.
+     */
+    private void startConsumer() {
+        Thread consumerThread = new Thread(() -> {
+            while (true) {
+                try {
+                    BookingStatus status = dashboardQueue.take();  // Blocks until an item is available
+                    processDashboardUpdate(status);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();  // Restore interrupted state
+                    break;  // Exit the loop if interrupted
+                }
+            }
+        });
+        consumerThread.setDaemon(true);  // Set as a daemon thread so it doesn't block application shutdown
+        consumerThread.start();
+    }
+
+    /**
+     * Process the dashboard update.
+     */
+    @Transactional
+    private void processDashboardUpdate(BookingStatus status) {
         StoredDashboard dashboard = dashboardDAO.getAllDashboards();
 
         if (dashboard == null) {
             dashboard = new StoredDashboard();
+            if (BookingStatus.PENDING.equals(status)) {
+                dashboard.setTotalPendingBookings(1);
+            }
+            if (BookingStatus.COMPLETED.equals(status)) {
+                dashboard.setTotalCompletedBookings(1);
+            }
+
             dashboard.setTotalBookings(1);
-            dashboard.setTotalCompletedBookings(0);
-            dashboard.setTotalPendingBookings(1);
 
         } else {
-
-            long totalCompletedBookings = getTotalCompletedBookings();
-            long totalPendingBookings = getTotalPendingBookings();
+            long totalCompletedBookings = dashboard.getTotalCompletedBookings();
+            long totalPendingBookings = dashboard.getTotalPendingBookings();
 
             // Update statistics based on the booking status
             if (BookingStatus.PENDING.equals(status)) {
@@ -58,30 +89,11 @@ public class DashboardServiceImpl implements DashboardService {
             dashboard.setTotalPendingBookings(totalPendingBookings);
         }
 
-        // Save or update the dashboard record in the database
         dashboardDAO.saveOrUpdateDashboard(dashboard);
-        if (!dashboardQueue.isEmpty()) {
-            dashboardQueue.remove();
-        }
-        dashboardQueue.offer(dashboard);
-    }
-
-    @UnitOfWork
-    public long getTotalBookings() {
-        return dashboardDAO.getAllDashboards().getTotalBookings();
-    }
-
-    @UnitOfWork
-    public long getTotalCompletedBookings() {
-        return dashboardDAO.getAllDashboards().getTotalCompletedBookings();
-    }
-
-    @UnitOfWork
-    public long getTotalPendingBookings() {
-        return dashboardDAO.getAllDashboards().getTotalPendingBookings();
     }
 
     public StoredDashboard getLatestDashboardStats() {
-        return dashboardQueue.peek();
+        // Since updates are processed from the queue, we assume the DB reflects the latest state
+        return dashboardDAO.getAllDashboards();
     }
 }
