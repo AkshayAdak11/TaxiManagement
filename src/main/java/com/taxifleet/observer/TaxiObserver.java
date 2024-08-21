@@ -7,7 +7,9 @@ import com.taxifleet.enums.BookingStatus;
 import com.taxifleet.enums.TaxiStatus;
 import com.taxifleet.services.CentralizedBookingService;
 import com.taxifleet.strategy.BookingAssignmentStrategy;
+import io.dropwizard.hibernate.UnitOfWork;
 import lombok.Data;
+import lombok.Setter;
 
 import javax.inject.Inject;
 import java.util.Objects;
@@ -16,6 +18,7 @@ import java.util.concurrent.ConcurrentMap;
 
 @Data
 public class TaxiObserver {
+    @Setter
     private final StoredTaxi taxi;
     private final BookingAssignmentStrategy assignmentStrategy;
     private final CentralizedBookingService centralizedBookingService;
@@ -31,14 +34,16 @@ public class TaxiObserver {
 
     public void update(StoredBooking storedBooking) {
         //Push in map according to pattern strategy
-        if (availableBookings.isEmpty() || !availableBookings.containsKey(storedBooking) &&
+        if ((availableBookings.isEmpty() || !availableBookings.containsKey(storedBooking)) &&
                 (this.assignmentStrategy.isEligibleToServeBooking(taxi, storedBooking))) {
                 availableBookings.put(storedBooking, true);
         }
     }
 
+
     public boolean selectBooking(StoredBooking storedBooking) {
-        if (Boolean.TRUE.equals(availableBookings.get(storedBooking)) && BookingStatus.PENDING.equals(storedBooking.getStatus())) {
+        if (Boolean.TRUE.equals(availableBookings.get(storedBooking)) &&
+                BookingStatus.PENDING.equals(storedBooking.getStatus())) {
             // Attempt booking to this taxi using the centralized service
             boolean assigned = centralizedBookingService.assignBookingToTaxi(taxi, storedBooking);
             if (assigned) {

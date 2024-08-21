@@ -31,11 +31,12 @@ public class AllDistanceBasedAssignmentStrategy implements BookingAssignmentStra
             taxi.setAvailable(false);
             taxi.setBookingId(storedBooking.getBookingId());
             taxi.setStatus(TaxiStatus.BOOKED);
-            boolean bookedTaxi = cachedTaxiService.bookTaxi(taxi, storedBooking.getBookingId());
+            boolean bookedTaxi = cachedTaxiService.bookTaxi(taxi, storedBooking.getBookingId(),
+                    storedBooking.getToLatitude(), storedBooking.getToLongitude());
             if (bookedTaxi) {
                 bookingService.confirmBooking(storedBooking, taxi.getTaxiNumber());
             }
-            dashboardService.updateDashboardStats(BookingStatus.COMPLETED);
+            dashboardService.updateDashboardStats(storedBooking.getBookingId(), taxi.getTaxiNumber(), BookingStatus.COMPLETED);
             return bookedTaxi;
         }
         return false;
@@ -43,7 +44,8 @@ public class AllDistanceBasedAssignmentStrategy implements BookingAssignmentStra
 
     @Override
     public boolean isEligibleToServeBooking(StoredTaxi taxi, StoredBooking storedBooking) {
-        return true;
+        return TaxiStatus.AVAILABLE.equals(taxi.getStatus()) && taxi.isAvailable() &&
+                BookingStatus.PENDING.equals(storedBooking.getStatus());
     }
 }
 

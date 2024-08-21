@@ -1,5 +1,6 @@
 package com.taxifleet.resources;
 
+import com.google.common.base.Preconditions;
 import com.taxifleet.db.StoredBooking;
 import com.taxifleet.services.BookingService;
 import io.dropwizard.hibernate.UnitOfWork;
@@ -15,7 +16,7 @@ import java.util.List;
 @Path("/bookings")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Tag(name = "Booking Api")
+@Tag(name = "Booking Api", description = "Booking related Api")
 public class BookingResource {
 
     private final BookingService bookingService;
@@ -47,6 +48,9 @@ public class BookingResource {
     @UnitOfWork
     public StoredBooking createBooking(
             @ApiParam(value = "Booking creation", required = true) StoredBooking storedBooking) {
+        Preconditions.checkArgument(storedBooking.getFromLatitude() != storedBooking.getToLatitude() &&
+                storedBooking.getFromLongitude() != storedBooking.getToLongitude());
+
         StoredBooking newStoredBooking = bookingService.createBooking(storedBooking);
         bookingService.publishBooking(storedBooking);
         return newStoredBooking;

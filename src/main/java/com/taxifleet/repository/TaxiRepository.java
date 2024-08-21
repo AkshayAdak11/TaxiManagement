@@ -10,7 +10,7 @@ public interface TaxiRepository {
     List<StoredTaxi> getAllTaxis();
     StoredTaxi getTaxi(String taxiNumber);
     StoredTaxi createTaxi(StoredTaxi taxi);
-    StoredTaxi updateTaxi(StoredTaxi taxi);
+    void updateTaxi(StoredTaxi taxi);
     void deleteTaxi(String taxiNumber);
     void setTaxiAvailability(String taxiNumber, boolean available);
     List<StoredTaxi> findNearbyTaxis(Double latitude, Double longitude, Double radius);

@@ -12,24 +12,17 @@ public interface CachedTaxiService {
     List<StoredTaxi> getAllTaxis();
     StoredTaxi getTaxi(String taxiNumber);
     StoredTaxi createTaxi(StoredTaxi taxi);
-    boolean bookTaxi(StoredTaxi taxi, long bookingId);
+    boolean bookTaxi(StoredTaxi taxi, long bookingId, double toLatitude, double toLongitude);
     StoredTaxi updateTaxi(StoredTaxi taxi);
     void deleteTaxi(String taxiNumber);
-    void setTaxiAvailability(String taxiNumber, boolean available);
+    void updateTaxiAvailability(String taxiNumber, boolean available, TaxiStatus taxiStatus);
     List<StoredTaxi> findNearbyTaxis(Double latitude, Double longitude, Double radius);
-    StoredTaxi findNearByAvailableTaxi(Double latitude, Double longitude, Double radius);
-    void updateTaxiStatus(StoredTaxi taxi, TaxiStatus status);
-    boolean isTaxiAvailable(); // New method
-    StoredTaxi getTaxiAvailable();
 
     boolean subscribeTaxiToBookings(String taxiNumber, BookingStrategy strategy);
 
     boolean unsubscribeTaxiToBookings(String taxiNumber);
 
     void notifyTaxis(StoredBooking storedBooking);
-
-    boolean selectBooking(String taxiId, long bookingId);
-
     List<StoredBooking> getAllBookingsAsPerChoice(String taxiId);
 
     StoredBooking getBookingTaxis(long bookingId);

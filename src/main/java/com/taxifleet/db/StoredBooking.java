@@ -1,8 +1,11 @@
 package com.taxifleet.db;
 import com.taxifleet.enums.BookingStatus;
 import lombok.Data;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.Objects;
 
 @Data
@@ -20,11 +23,27 @@ public class StoredBooking {
     private String taxiId;
 
 
-    @Column(name = "latitude", nullable = false)
-    private double latitude;
+    @Column(name = "from_latitude", nullable = false)
+    private double fromLatitude;
 
-    @Column(name = "longitude", nullable = false)
-    private double longitude;
+    @Column(name = "from_longitude", nullable = false)
+    private double fromLongitude;
+
+    @Column(name = "to_latitude", nullable = false)
+    private double toLatitude;
+
+    @Column(name = "to_longitude", nullable = false)
+    private double toLongitude;
+
+    @Column(name = "fare")
+    private long fare; // This is in minutes
+
+    // Start and end time of the booking
+    @Column(name = "start_time", nullable = false)
+    private Date startTime;
+
+    @Column(name = "end_time")
+    private Date endTime;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")

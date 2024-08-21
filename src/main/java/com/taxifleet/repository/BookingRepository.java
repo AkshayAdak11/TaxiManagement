@@ -14,4 +14,6 @@ public interface BookingRepository {
     List<StoredBooking> findBookingsByLocation(Location location);
 
     List<StoredBooking> findAllPendingBookings();
+
+    List<StoredBooking> getBookingsForTaxi(String taxiNumber);
 }

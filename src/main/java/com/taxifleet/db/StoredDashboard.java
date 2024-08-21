@@ -1,25 +1,56 @@
 package com.taxifleet.db;
 
+import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Data
 @Entity
 @Table(name = "dashboard")
+//@Builder
 public class StoredDashboard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "total_bookings")
-    private long totalBookings;
+    @Column(name = "booking_id", nullable = false, unique = true)
+    private long bookingId;
 
-    @Column(name = "total_completed_bookings")
-    private long totalCompletedBookings;
+    @Column(name = "taxi_number")
+    private String taxiNumber;
 
-    @Column(name = "total_pending_bookings")
-    private long totalPendingBookings;
+    // Start and end time of the booking
+    @Column(name = "start_time", nullable = false)
+    private Date startTime;
 
+    @Column(name = "end_time")
+    private Date endTime;
+
+    // Booking status
+    @Column(name = "is_completed", nullable = false)
+    private boolean isCompleted;
+
+    @Column(name = "is_pending", nullable = false)
+    private boolean isPending;
+
+    @Column(name = "is_cancelled", nullable = false)
+    private boolean isCancelled;
+
+    // Fare for the booking
+    @Column(name = "fare")
+    private double fare;
+
+    // Location data of the booking
+    @Column(name = "booking_latitude")
+    private double bookingLatitude;
+
+    @Column(name = "booking_longitude")
+    private double bookingLongitude;
+
+    @Version
+    @Column(name = "version")
+    private Long version;
 }

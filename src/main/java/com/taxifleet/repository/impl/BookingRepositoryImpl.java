@@ -49,8 +49,8 @@ public class BookingRepositoryImpl implements BookingRepository {
     @Override
     public List<StoredBooking> findBookingsByLocation(Location location) {
         return bookingDAO.findAll().stream()
-                .filter(booking -> location.getLatitude() == booking.getLatitude())
-                .filter(booking -> location.getLongitude() == booking.getLongitude())
+                .filter(booking -> location.getLatitude() == booking.getFromLatitude())
+                .filter(booking -> location.getLongitude() == booking.getFromLongitude())
                 .collect(Collectors.toList());
     }
 
@@ -58,4 +58,9 @@ public class BookingRepositoryImpl implements BookingRepository {
     public List<StoredBooking> findAllPendingBookings() {
         return bookingDAO.findPendingBookings();
         }
+
+    @Override
+    public List<StoredBooking> getBookingsForTaxi(String taxiNumber) {
+        return bookingDAO.getAllBookingsForTaxi(taxiNumber);
+    }
 }

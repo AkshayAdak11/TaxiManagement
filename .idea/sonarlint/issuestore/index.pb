@@ -100,3 +100,13 @@ h
 8src/test/java/com/taxifleet/db/dao/DashboardDAOTest.java,4/9/4982ed75de9e08f895877c1dec5d9737627f9388
 f
 6src/test/java/com/taxifleet/db/dao/BookingDAOTest.java,d/8/d864f105a3930a9378a4ad4aa8006f012bf4a1d0
+e
+5src/main/java/com/taxifleet/module/BookingModule.java,e/f/efa4a58deebb608a5fadc544d7d0eb98fa90f9b7
+Y
+)src/test/java/com/taxifleet/BaseTest.java,5/1/5170c1369347de8e2c91e92054e6c6d11f88ffa5
+d
+4src/test/java/com/taxifleet/BaseIntegrationTest.java,f/f/ff198260b944136636622f199fc3c2235ded0801
+`
+0src/test/java/com/taxifleet/IntegrationTest.java,3/0/30d2b3e86e961d4c7ede1f30b1f085abc257eac8
+\
+,src/test/java/com/taxifleet/Integration.java,4/3/43a16f7984a16ec20a9e243aa02b40740ff9c265

@@ -28,9 +28,10 @@ public class DistanceBasedAssignmentStrategy implements BookingAssignmentStrateg
 
     @Override
     public boolean assignBooking(StoredTaxi taxi, StoredBooking storedBooking) {
-        if (isNearBy(storedBooking, taxi) && (cachedTaxiService.bookTaxi(taxi, storedBooking.getBookingId()))) {
+        if (isNearBy(storedBooking, taxi) && (cachedTaxiService.bookTaxi(taxi, storedBooking.getBookingId(),
+                storedBooking.getToLatitude(), storedBooking.getToLongitude()))) {
                 bookingService.confirmBooking(storedBooking, taxi.getTaxiNumber());
-                dashboardService.updateDashboardStats(BookingStatus.COMPLETED);
+                dashboardService.updateDashboardStats(storedBooking.getBookingId(), taxi.getTaxiNumber(), BookingStatus.COMPLETED);
                 return true;
 
         }
@@ -43,12 +44,13 @@ public class DistanceBasedAssignmentStrategy implements BookingAssignmentStrateg
     }
 
     public boolean isNearBy(StoredBooking storedBooking, StoredTaxi taxi) {
-        Location bookingLocation = new Location(storedBooking.getLatitude(),
-                storedBooking.getLongitude());
-        Location taxiLocation = new Location(taxi.getLatitude(), taxi.getLongitude());
+        Location bookingLocation = new Location(storedBooking.getFromLatitude(),
+                storedBooking.getFromLongitude());
+        Location taxiLocation = new Location(taxi.getFromLatitude(), taxi.getFromLongitude());
 
         double distance = taxiLocation.distanceTo(bookingLocation.getLatitude(), bookingLocation.getLongitude());
-        return distance <= maxDistance && taxi.isAvailable() && TaxiStatus.AVAILABLE.equals(taxi.getStatus());
+        return distance <= maxDistance && taxi.isAvailable() && TaxiStatus.AVAILABLE.equals(taxi.getStatus()) &&
+                BookingStatus.PENDING.equals(storedBooking.getStatus());
     }
 }
 

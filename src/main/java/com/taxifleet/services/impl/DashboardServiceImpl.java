@@ -1,14 +1,17 @@
 package com.taxifleet.services.impl;
 
+import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredDashboard;
 import com.taxifleet.db.dao.DashboardDAO;
 import com.taxifleet.enums.BookingStatus;
+import com.taxifleet.services.BookingService;
 import com.taxifleet.services.DashboardService;
-import io.dropwizard.hibernate.UnitOfWork;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.transaction.Transactional;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -16,19 +19,34 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class DashboardServiceImpl implements DashboardService {
 
     private final DashboardDAO dashboardDAO;
-    private final BlockingQueue<BookingStatus> dashboardQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<StoredDashboard> dashboardQueue = new LinkedBlockingQueue<>();
+
+    private final BookingService bookingService;
 
     @Inject
-    public DashboardServiceImpl(DashboardDAO dashboardDAO) {
+    public DashboardServiceImpl(DashboardDAO dashboardDAO,
+                                BookingService bookingService) {
         this.dashboardDAO = dashboardDAO;
+        this.bookingService = bookingService;
         startConsumer();  // Start the consumer thread
     }
 
-    /**
-     * Adds a dashboard update task to the queue.
-     */
-    public void updateDashboardStats(BookingStatus status) {
-        dashboardQueue.offer(status);
+
+    public void createBookingInitialStats(StoredDashboard storedDashboard) {
+        dashboardQueue.offer(storedDashboard);
+    }
+
+    public void updateDashboardStats(long bookingId, String taxiNumber, BookingStatus status) {
+        boolean pending = BookingStatus.PENDING.equals(status);
+        boolean completed = BookingStatus.COMPLETED.equals(status);
+        boolean cancelled = BookingStatus.CANCELLED.equals(status);
+        StoredDashboard storedDashboard = new StoredDashboard();
+        storedDashboard.setBookingId(bookingId);
+        storedDashboard.setTaxiNumber(taxiNumber);
+        storedDashboard.setPending(pending);
+        storedDashboard.setCompleted(completed);
+        storedDashboard.setCancelled(cancelled);
+        createBookingInitialStats(storedDashboard);
     }
 
     /**
@@ -38,11 +56,11 @@ public class DashboardServiceImpl implements DashboardService {
         Thread consumerThread = new Thread(() -> {
             while (true) {
                 try {
-                    BookingStatus status = dashboardQueue.take();  // Blocks until an item is available
-                    processDashboardUpdate(status);
+                    StoredDashboard storedDashboard = dashboardQueue.take();
+                    processDashboardUpdate(storedDashboard);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();  // Restore interrupted state
-                    break;  // Exit the loop if interrupted
+                    break;
                 }
             }
         });
@@ -53,47 +71,35 @@ public class DashboardServiceImpl implements DashboardService {
     /**
      * Process the dashboard update.
      */
-    @Transactional
-    private void processDashboardUpdate(BookingStatus status) {
-        StoredDashboard dashboard = dashboardDAO.getAllDashboards();
-
-        if (dashboard == null) {
-            dashboard = new StoredDashboard();
-            if (BookingStatus.PENDING.equals(status)) {
-                dashboard.setTotalPendingBookings(1);
-            }
-            if (BookingStatus.COMPLETED.equals(status)) {
-                dashboard.setTotalCompletedBookings(1);
-            }
-
-            dashboard.setTotalBookings(1);
-
+    private void processDashboardUpdate(StoredDashboard updatedStoredDashboard) {
+        StoredDashboard storedDashboard = dashboardDAO.findByBookingId(updatedStoredDashboard.getBookingId());
+        if (Objects.isNull(storedDashboard)) {
+            dashboardDAO.saveOrUpdateDashboard(updatedStoredDashboard);
+            return;
         } else {
-            long totalCompletedBookings = dashboard.getTotalCompletedBookings();
-            long totalPendingBookings = dashboard.getTotalPendingBookings();
-
-            // Update statistics based on the booking status
-            if (BookingStatus.PENDING.equals(status)) {
-                totalPendingBookings++;
-            } else if (BookingStatus.COMPLETED.equals(status)) {
-                totalCompletedBookings++;
-                totalPendingBookings--;
-            } else if (BookingStatus.CANCELLED.equals(status)) {
-                totalPendingBookings--;
-            }
-
-            long totalBookings = totalPendingBookings + totalCompletedBookings;
-
-            dashboard.setTotalBookings(totalBookings);
-            dashboard.setTotalCompletedBookings(totalCompletedBookings);
-            dashboard.setTotalPendingBookings(totalPendingBookings);
+            storedDashboard.setCancelled(updatedStoredDashboard.isCancelled());
+            storedDashboard.setCompleted(updatedStoredDashboard.isCompleted());
+            storedDashboard.setPending(updatedStoredDashboard.isPending());
+            storedDashboard.setTaxiNumber(updatedStoredDashboard.getTaxiNumber());
         }
+        dashboardDAO.saveOrUpdateDashboard(storedDashboard);
 
-        dashboardDAO.saveOrUpdateDashboard(dashboard);
     }
 
-    public StoredDashboard getLatestDashboardStats() {
-        // Since updates are processed from the queue, we assume the DB reflects the latest state
+    public List<StoredDashboard> getLatestDashboardStats() {
         return dashboardDAO.getAllDashboards();
+    }
+
+    public List<StoredDashboard> findByTimeRange(Date startTime, Date endTime) {
+        return dashboardDAO.findByTimeRange(startTime, endTime);
+    }
+
+    public List<StoredDashboard> findByLocationRange(double fromLatitude, double fromLongitude) {
+        return dashboardDAO.findByLocationRange(fromLatitude, fromLongitude);
+    }
+
+    @Override
+    public List<StoredDashboard> getAllBookingsForTaxi(String taxiNumber) {
+        return dashboardDAO.findAllBookingsByTaxiId(taxiNumber);
     }
 }

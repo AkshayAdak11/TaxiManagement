@@ -145,4 +145,23 @@ public class BookingDAO {
             session.close();
         }
     }
+
+    public List<StoredBooking> getAllBookingsForTaxi(String taxiNumber) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        try {
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<StoredBooking> criteria = builder.createQuery(StoredBooking.class);
+            Root<StoredBooking> root = criteria.from(StoredBooking.class);
+            criteria.select(root).where(builder.equal(root.get("taxiNumber"), taxiNumber));
+            List<StoredBooking> result = session.createQuery(criteria).getResultList();
+            transaction.commit();
+            return result;
+        } catch (Exception e) {
+            transaction.rollback();
+            throw e;
+        } finally {
+            session.close();
+        }
+    }
 }

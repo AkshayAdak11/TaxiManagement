@@ -29,7 +29,7 @@ public class BookingTask implements Runnable {
                 Executors.newSingleThreadScheduledExecutor().schedule(this, 5, TimeUnit.MINUTES);
             } else if (retryCount.get() >= 3) {
                 bookingService.cancelBooking(booking);
-                dashboardService.updateDashboardStats(BookingStatus.CANCELLED);
+                dashboardService.updateDashboardStats(booking.getBookingId(), null, BookingStatus.CANCELLED);
             }
         } catch (Exception e) {
             e.printStackTrace();

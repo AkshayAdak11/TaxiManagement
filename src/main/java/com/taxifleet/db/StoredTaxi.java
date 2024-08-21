@@ -1,7 +1,6 @@
 package com.taxifleet.db;
 
 import com.taxifleet.enums.TaxiStatus;
-import com.taxifleet.model.Location;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -27,11 +26,17 @@ public class StoredTaxi {
     @Column(name = "status")
     private TaxiStatus status;
 
-    @Column(name = "latitude", nullable = false)
-    private double latitude;
+    @Column(name = "from_latitude", nullable = false)
+    private double fromLatitude;
 
-    @Column(name = "longitude", nullable = false)
-    private double longitude;
+    @Column(name = "from_longitude", nullable = false)
+    private double fromLongitude;
+
+    @Column(name = "to_latitude", nullable = false)
+    private double toLatitude;
+
+    @Column(name = "to_longitude", nullable = false)
+    private double toLongitude;
 
     @Version
     @Column(name = "version")

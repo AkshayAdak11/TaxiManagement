@@ -15,7 +15,6 @@ import java.util.List;
 
 @Singleton
 public class TaxiDAO {
-
     private final SessionFactory sessionFactory;
 
     @Inject
@@ -73,13 +72,13 @@ public class TaxiDAO {
         }
     }
 
-    public StoredTaxi update(StoredTaxi taxi) {
+
+    public void update(StoredTaxi taxi) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         try {
-            StoredTaxi result = (StoredTaxi) session.merge(taxi);
+            session.update(taxi);
             transaction.commit();
-            return result;
         } catch (Exception e) {
             transaction.rollback();
             throw e;
@@ -108,8 +107,8 @@ public class TaxiDAO {
         try {
             StoredTaxi taxi = findByTaxiNumber(taxiNumber);
             if (taxi != null) {
-                taxi.setLatitude(location.getLatitude());
-                taxi.setLongitude(location.getLongitude());
+                taxi.setFromLatitude(location.getLatitude());
+                taxi.setFromLongitude(location.getLongitude());
                 update(taxi);
             }
             transaction.commit();

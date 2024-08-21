@@ -1,8 +1,10 @@
 package com.taxifleet.resources;
 
+import com.google.common.base.Preconditions;
 import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredTaxi;
 import com.taxifleet.enums.BookingStrategy;
+import com.taxifleet.enums.TaxiStatus;
 import com.taxifleet.observer.TaxiObserver;
 import com.taxifleet.services.CachedTaxiService;
 import io.dropwizard.hibernate.UnitOfWork;
@@ -19,7 +21,7 @@ import java.util.List;
 @Path("/taxis")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Tag(name = "Taxis Api")
+@Tag(name = "Taxis Api", description = "Taxi Related Api")
 public class TaxiResource {
 
     private final CachedTaxiService cachedTaxiService;
@@ -50,17 +52,20 @@ public class TaxiResource {
     @UnitOfWork
     public StoredTaxi createTaxi(
             @ApiParam(value = "Add Taxi ", required = true) StoredTaxi taxi) {
+        Preconditions.checkArgument(taxi.getFromLatitude() == taxi.getToLatitude() &&
+                taxi.getFromLongitude() == taxi.getToLongitude());
         return cachedTaxiService.createTaxi(taxi);
     }
 
     @PUT
-    @Path("/{id}/availability")
+    @Path("/{taxiNumber}/{availabilityStatus}")
     @Operation(summary = "Sets the availability of a taxi by its ID")
     @UnitOfWork
-    public void setTaxiAvailability(
+    public void updateTaxiAvailability(
             @ApiParam(value = "Get Taxi By ID", required = true) @PathParam("taxiNumber") String taxiNumber,
-            @ApiParam(value = "Availability status to set", required = true) @QueryParam("available") boolean available) {
-        cachedTaxiService.setTaxiAvailability(taxiNumber, available);
+            @ApiParam(value = "Availability status to set", required = true) @QueryParam("available") boolean available,
+            @ApiParam(value = "Availability status", required = true) @PathParam("availabilityStatus") TaxiStatus taxiStatus) {
+        cachedTaxiService.updateTaxiAvailability(taxiNumber, available, taxiStatus);
     }
 
     @DELETE
@@ -88,7 +93,9 @@ public class TaxiResource {
     @UnitOfWork
     public Response getAssignedBookingAsPerChoice(@QueryParam("taxiNumber") String taxiNumber) {
         List<StoredBooking> storedBookings = cachedTaxiService.getAllBookingsAsPerChoice(taxiNumber);
-        return Response.ok(storedBookings).build();
+        return Response.ok()
+                .entity(storedBookings)
+                .build();
     }
 
 
@@ -145,4 +152,11 @@ public class TaxiResource {
             return Response.status(Response.Status.NOT_FOUND).entity("Taxi or booking not found").build();
         }
     }
+
+    @GET
+    @Path("/all/subscribed/taxis")
+    public Response getAllSubscribedTaxis() {
+        List<TaxiObserver> taxiObservers = cachedTaxiService.getAllTaxiObserver();
+            return Response.ok().entity(taxiObservers).build();
+        }
 }

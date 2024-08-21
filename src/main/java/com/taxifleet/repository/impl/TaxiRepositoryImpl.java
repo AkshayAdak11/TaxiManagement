@@ -35,8 +35,8 @@ public class TaxiRepositoryImpl implements TaxiRepository {
     }
 
     @Override
-    public StoredTaxi updateTaxi(StoredTaxi taxi) {
-        return taxiDAO.update(taxi);
+    public void updateTaxi(StoredTaxi taxi) {
+        taxiDAO.update(taxi);
     }
 
     @Override

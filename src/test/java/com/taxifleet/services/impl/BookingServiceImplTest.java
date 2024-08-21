@@ -5,29 +5,37 @@
 //import com.taxifleet.enums.BookingStatus;
 //import com.taxifleet.repository.BookingRepository;
 //import com.taxifleet.services.BookingService;
+//import com.taxifleet.services.DashboardService;
 //import com.taxifleet.services.MessagingService;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
+//import org.junit.jupiter.api.extension.ExtendWith;
 //import org.mockito.Mock;
-//import org.mockito.Mockito;
+//import org.mockito.junit.jupiter.MockitoExtension;
 //
 //import java.util.List;
 //
 //import static org.junit.jupiter.api.Assertions.*;
 //import static org.mockito.Mockito.*;
 //
+//@ExtendWith(MockitoExtension.class)
 //public class BookingServiceImplTest {
+//
+//    @Mock
 //    private BookingDAO bookingDAO;
 //    @Mock
 //    private BookingRepository bookingRepository;
 //    @Mock
 //    private MessagingService messagingService;
+//    @Mock
+//    private DashboardService dashboardService;
+//
 //    private BookingService bookingService;
 //
 //    @BeforeEach
 //    public void setUp() {
-//        bookingDAO = Mockito.mock(BookingDAO.class);
-//        bookingService = new BookingServiceImpl(bookingRepository, messagingService);
+//        // Initialize bookingService with all mocked dependencies
+//        bookingService = new BookingServiceImpl(bookingRepository, messagingService, dashboardService);
 //    }
 //
 //    @Test

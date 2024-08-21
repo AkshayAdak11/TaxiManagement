@@ -1,9 +1,4 @@
-com/taxifleet/db/StoredBookingTest.class
-com/taxifleet/db/dao/DashboardDAOTest.class
-com/taxifleet/observer/TaxiObserverTest.class
-com/taxifleet/db/dao/BookingDAOTest.class
-com/taxifleet/cronjob/BookingProcessorTest.class
-com/taxifleet/db/dao/TaxiDAOTest.class
-com/taxifleet/services/impl/CachedTaxiServiceImplTest.class
-com/taxifleet/cronjob/BookingTaskTest.class
-com/taxifleet/services/impl/BookingServiceImplTest.class
+com/taxifleet/BaseTest.class
+com/taxifleet/integrate/TaxiBookingServiceTest.class
+com/taxifleet/BaseIntegrationTest.class
+com/taxifleet/BaseTest$1.class

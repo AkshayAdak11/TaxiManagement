@@ -20,4 +20,6 @@ public interface BookingService {
     void confirmBooking(StoredBooking storedBooking, String taxiId);
 
     List<StoredBooking> allPendingBooking();
+
+    List<StoredBooking> getBookingsForTaxi(String taxiNumber);
 }
