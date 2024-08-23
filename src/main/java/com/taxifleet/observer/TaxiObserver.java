@@ -68,7 +68,6 @@ public class TaxiObserver {
 
 
     public void removeBooking(StoredBooking storedBooking) {
-        System.out.println("Stored Booking to remove is "+ storedBooking);
         availableBookings.remove(storedBooking.getBookingId());
     }
 }

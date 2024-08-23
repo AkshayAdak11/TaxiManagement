@@ -36,7 +36,8 @@ public class CentralizedBookingServiceImpl implements CentralizedBookingService 
             assigned = bookingAssignments.putIfAbsent(bookingId, taxi) == null;
         }
         if (!assigned) {
-            System.err.println("Booking already present with another taxi");
+
+            System.err.println("Booking already present with another taxi "+ bookingAssignments.get(bookingId).getTaxiNumber());
             return false;
         }
         return true;
