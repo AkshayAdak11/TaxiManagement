@@ -53,9 +53,7 @@ To run tests use:
 
 Notes:
 
-This implementation uses an in-memory queue (BlockingQueue) for messaging between components.
-
-The in-memory queue simplifies setup and reduces dependencies by replacing RabbitMQ.
+This implementation uses an in-memory queue (BlockingQueue) for Main Service and Dashboard Service. Aiming to highly available and metrics load to be seperated
 
 For a production-ready system, consider using external message brokers like RabbitMQ for better scalability and reliability.
 
@@ -63,13 +61,9 @@ This project focus more on Object Oriented Programming and Design patterns.
 
 Contributions are welcome! Please fork the repository and submit a pull request.
 
-
 ### How to Download and Run
 
 You can clone the repository, follow the instructions in the `README.md`, and the application should be up and running in no time.
-
-
-
 
 
 ### Architecture Overview
