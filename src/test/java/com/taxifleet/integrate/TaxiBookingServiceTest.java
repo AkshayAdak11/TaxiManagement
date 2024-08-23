@@ -3,7 +3,6 @@ package com.taxifleet.integrate;
 import com.google.inject.Inject;
 import com.taxifleet.BaseIntegrationTest;
 import com.taxifleet.db.StoredBooking;
-import com.taxifleet.db.StoredDashboard;
 import com.taxifleet.db.StoredTaxi;
 import com.taxifleet.enums.BookingStatus;
 import com.taxifleet.enums.BookingStrategy;
@@ -13,7 +12,7 @@ import com.taxifleet.resources.BookingResource;
 import com.taxifleet.resources.DashboardResource;
 import com.taxifleet.resources.TaxiResource;
 import com.taxifleet.services.BookingService;
-import com.taxifleet.services.CachedTaxiService;
+import com.taxifleet.services.TaxiService;
 import com.taxifleet.services.DashboardService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
@@ -34,7 +33,7 @@ public class TaxiBookingServiceTest extends BaseIntegrationTest {
     private BookingService bookingService;
 
     @Inject
-    private CachedTaxiService cachedTaxiService;
+    private TaxiService taxiService;
 
     @Inject
     private DashboardService dashboardService;
@@ -47,7 +46,7 @@ public class TaxiBookingServiceTest extends BaseIntegrationTest {
     void setup() {
         baseSetup();
         bookingResource = new BookingResource(bookingService);
-        taxiResource = new TaxiResource(cachedTaxiService);
+        taxiResource = new TaxiResource(taxiService, bookingService);
         dashboardResource = new DashboardResource(dashboardService);
     }
 
@@ -64,6 +63,7 @@ public class TaxiBookingServiceTest extends BaseIntegrationTest {
         storedTaxi.setFromLongitude(0.00);
         storedTaxi.setToLatitude(0.00);
         storedTaxi.setToLongitude(0.00);
+        storedTaxi.setBookingStrategy(BookingStrategy.ALL_AREA);
         taxiResource.createTaxi(storedTaxi);
         System.out.println("Booked taxi 1 " + storedTaxi);
 
@@ -76,6 +76,7 @@ public class TaxiBookingServiceTest extends BaseIntegrationTest {
         storedTaxi1.setFromLongitude(12.00);
         storedTaxi1.setToLatitude(12.00);
         storedTaxi1.setToLongitude(12.00);
+        storedTaxi1.setBookingStrategy(BookingStrategy.NEAR_BY);
         taxiResource.createTaxi(storedTaxi1);
         System.out.println("Booked taxi 2 " + storedTaxi1);
 
@@ -89,6 +90,7 @@ public class TaxiBookingServiceTest extends BaseIntegrationTest {
         storedTaxi2.setFromLongitude(0.00);
         storedTaxi2.setToLatitude(0.00);
         storedTaxi2.setToLongitude(0.00);
+        storedTaxi2.setBookingStrategy(BookingStrategy.ALL_AREA);
         taxiResource.createTaxi(storedTaxi2);
         System.out.println("Booked taxi 3 " + storedTaxi2);
 
@@ -102,6 +104,7 @@ public class TaxiBookingServiceTest extends BaseIntegrationTest {
         storedTaxi3.setFromLongitude(0.00);
         storedTaxi3.setToLatitude(0.00);
         storedTaxi3.setToLongitude(0.00);
+        storedTaxi3.setBookingStrategy(BookingStrategy.NEAR_BY);
         taxiResource.createTaxi(storedTaxi3);
         System.out.println("Booked taxi 4 " + storedTaxi3);
 
@@ -136,10 +139,6 @@ public class TaxiBookingServiceTest extends BaseIntegrationTest {
 
 
         //Now Set taxi preference whether taxi want to accept near by and all area bookings
-        taxiResource.subscribeTaxi(storedTaxi.getTaxiNumber(), BookingStrategy.ALL_AREA);
-        taxiResource.subscribeTaxi(storedTaxi1.getTaxiNumber(), BookingStrategy.NEAR_BY);
-        taxiResource.subscribeTaxi(storedTaxi2.getTaxiNumber(), BookingStrategy.ALL_AREA);
-        taxiResource.subscribeTaxi(storedTaxi3.getTaxiNumber(), BookingStrategy.NEAR_BY);
         System.out.println("\n All subscribed taxis are as below");
         List<TaxiObserver> taxiObserversList = (List<TaxiObserver>) taxiResource.getAllSubscribedTaxis().getEntity();
         taxiObserversList.forEach(taxi -> {
@@ -322,7 +321,7 @@ public class TaxiBookingServiceTest extends BaseIntegrationTest {
         taxiResource.updateTaxiAvailability(storedTaxi2.getTaxiNumber(), true, TaxiStatus.AVAILABLE);
         //We have cron job to schedule pending bookings again so here we will push manually again
         bookingService.publishBooking(storedBooking2);
-        StoredTaxi finalTaxi = cachedTaxiService.getTaxi(storedTaxi2.getTaxiNumber());
+        StoredTaxi finalTaxi = taxiService.getTaxi(storedTaxi2.getTaxiNumber());
         Assertions.assertEquals(Response.ok().build()
                 .getStatus(), taxiResource.selectBooking(finalTaxi.getTaxiNumber(), storedBooking2.getBookingId())
                 .getStatus());

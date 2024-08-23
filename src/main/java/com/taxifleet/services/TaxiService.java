@@ -2,13 +2,12 @@ package com.taxifleet.services;
 
 import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredTaxi;
-import com.taxifleet.enums.BookingStrategy;
 import com.taxifleet.enums.TaxiStatus;
 import com.taxifleet.observer.TaxiObserver;
 
 import java.util.List;
 
-public interface CachedTaxiService {
+public interface TaxiService {
     List<StoredTaxi> getAllTaxis();
     StoredTaxi getTaxi(String taxiNumber);
     StoredTaxi createTaxi(StoredTaxi taxi);
@@ -18,14 +17,11 @@ public interface CachedTaxiService {
     void updateTaxiAvailability(String taxiNumber, boolean available, TaxiStatus taxiStatus);
     List<StoredTaxi> findNearbyTaxis(Double latitude, Double longitude, Double radius);
 
-    boolean subscribeTaxiToBookings(String taxiNumber, BookingStrategy strategy);
+    boolean unsubscribeTaxi(String taxiNumber);
 
-    boolean unsubscribeTaxiToBookings(String taxiNumber);
+    void notifyObservers(StoredBooking storedBooking);
+    List<StoredBooking> getAllBookingsForTaxiByPreference(String taxiId);
 
-    void notifyTaxis(StoredBooking storedBooking);
-    List<StoredBooking> getAllBookingsAsPerChoice(String taxiId);
-
-    StoredBooking getBookingTaxis(long bookingId);
     TaxiObserver getTaxiObserver(String taxiNumber);
 
     List<TaxiObserver> getAllTaxiObserver();

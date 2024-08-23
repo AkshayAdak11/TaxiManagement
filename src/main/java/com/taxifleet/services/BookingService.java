@@ -17,6 +17,8 @@ public interface BookingService {
 
     void cancelBooking(StoredBooking storedBooking);
 
+    void expiredBooking(StoredBooking storedBooking);
+
     void confirmBooking(StoredBooking storedBooking, String taxiId);
 
     List<StoredBooking> allPendingBooking();

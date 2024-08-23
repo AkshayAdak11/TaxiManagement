@@ -10,7 +10,7 @@ import java.util.List;
 public interface DashboardService {
     void createBookingInitialStats(StoredDashboard storedDashboard);
 
-    void updateDashboardStats(long bookingId, String taxiNumber, BookingStatus status);
+    void updateDashboardStats(StoredBooking booking, String taxiNumber, BookingStatus status);
 
     List<StoredDashboard> getLatestDashboardStats();
 

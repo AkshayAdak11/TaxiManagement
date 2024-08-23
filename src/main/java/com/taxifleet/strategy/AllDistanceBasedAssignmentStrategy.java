@@ -5,22 +5,22 @@ import com.taxifleet.db.StoredTaxi;
 import com.taxifleet.enums.BookingStatus;
 import com.taxifleet.enums.TaxiStatus;
 import com.taxifleet.services.BookingService;
-import com.taxifleet.services.CachedTaxiService;
+import com.taxifleet.services.TaxiService;
 import com.taxifleet.services.DashboardService;
 
 import javax.inject.Inject;
 
 public class AllDistanceBasedAssignmentStrategy implements BookingAssignmentStrategy {
-    private final CachedTaxiService cachedTaxiService;
+    private final TaxiService taxiService;
     private final BookingService bookingService;
 
     private final DashboardService dashboardService;
 
     @Inject
-    public AllDistanceBasedAssignmentStrategy(CachedTaxiService cachedTaxiService,
+    public AllDistanceBasedAssignmentStrategy(TaxiService taxiService,
                                               BookingService bookingService,
                                               DashboardService dashboardService) {
-        this.cachedTaxiService = cachedTaxiService;
+        this.taxiService = taxiService;
         this.bookingService = bookingService;
         this.dashboardService = dashboardService;
     }
@@ -31,12 +31,12 @@ public class AllDistanceBasedAssignmentStrategy implements BookingAssignmentStra
             taxi.setAvailable(false);
             taxi.setBookingId(storedBooking.getBookingId());
             taxi.setStatus(TaxiStatus.BOOKED);
-            boolean bookedTaxi = cachedTaxiService.bookTaxi(taxi, storedBooking.getBookingId(),
+            boolean bookedTaxi = taxiService.bookTaxi(taxi, storedBooking.getBookingId(),
                     storedBooking.getToLatitude(), storedBooking.getToLongitude());
             if (bookedTaxi) {
                 bookingService.confirmBooking(storedBooking, taxi.getTaxiNumber());
             }
-            dashboardService.updateDashboardStats(storedBooking.getBookingId(), taxi.getTaxiNumber(), BookingStatus.COMPLETED);
+            dashboardService.updateDashboardStats(storedBooking, taxi.getTaxiNumber(), BookingStatus.COMPLETED);
             return bookedTaxi;
         }
         return false;

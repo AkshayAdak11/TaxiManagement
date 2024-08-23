@@ -7,12 +7,10 @@ import com.taxifleet.enums.BookingStatus;
 import com.taxifleet.enums.TaxiStatus;
 import com.taxifleet.services.CentralizedBookingService;
 import com.taxifleet.strategy.BookingAssignmentStrategy;
-import io.dropwizard.hibernate.UnitOfWork;
 import lombok.Data;
 import lombok.Setter;
 
 import javax.inject.Inject;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -41,27 +39,25 @@ public class TaxiObserver {
     }
 
 
-    public boolean selectBooking(StoredBooking storedBooking) {
+    public boolean selectBookingAndBookTaxi(StoredBooking storedBooking) {
         if (Boolean.TRUE.equals(availableBookings.get(storedBooking)) &&
                 BookingStatus.PENDING.equals(storedBooking.getStatus())) {
             // Attempt booking to this taxi using the centralized service
-            boolean assigned = centralizedBookingService.assignBookingToTaxi(taxi, storedBooking);
-            if (assigned) {
-                if (assignBooking(storedBooking)) {
-                    //Remove booking from all observers map
+            boolean isBookingAssignedToTaxi = centralizedBookingService.assignBookingToTaxi(taxi, storedBooking);
+            if (isBookingAssignedToTaxi) {
+                if (bookTaxiWithPreference(storedBooking)) {
+                    //Remove booking from all observers map to remove unused data and booking from all other taxis.
                     centralizedBookingService.notifyObserversBookingCompleted(storedBooking);
                     centralizedBookingService.removeBookingFromAssignment(storedBooking);
                     return true;
                 }
                 centralizedBookingService.removeBookingFromAssignment(storedBooking);
-            } else {
-                centralizedBookingService.notifyOtherObserversIfBookingIsCompleted(storedBooking);
             }
         }
         return false;
     }
 
-    private boolean assignBooking(StoredBooking storedBooking) {
+    private boolean bookTaxiWithPreference(StoredBooking storedBooking) {
         if (taxi.isAvailable() && TaxiStatus.AVAILABLE.equals(taxi.getStatus())) {
             return assignmentStrategy.assignBooking(taxi, storedBooking);
         }
@@ -70,7 +66,6 @@ public class TaxiObserver {
 
 
     public void removeBooking(StoredBooking storedBooking) {
-        storedBooking.setStatus(BookingStatus.PENDING);
         availableBookings.remove(storedBooking);
     }
 }

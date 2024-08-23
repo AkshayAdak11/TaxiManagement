@@ -7,7 +7,7 @@ import com.taxifleet.resources.BookingResource;
 import com.taxifleet.resources.DashboardResource;
 import com.taxifleet.resources.TaxiResource;
 import com.taxifleet.services.BookingService;
-import com.taxifleet.services.CachedTaxiService;
+import com.taxifleet.services.TaxiService;
 import com.taxifleet.services.CentralizedBookingService;
 import com.taxifleet.services.DashboardService;
 import com.taxifleet.services.MessagingService;
@@ -24,7 +24,7 @@ public class TaxiFleetModule extends AbstractModule {
         bind(BookingResource.class).asEagerSingleton();
         bind(DashboardResource.class).asEagerSingleton();
         bind(TaxiRepository.class).to(TaxiRepositoryImpl.class);
-        bind(CachedTaxiService.class).to(CachedTaxiServiceImpl.class);
+        bind(TaxiService.class).to(CachedTaxiServiceImpl.class);
         bind(MessagingService.class).to(MessagingServiceImpl.class);
         bind(BookingService.class).to(BookingServiceImpl.class);
         bind(DashboardService.class).to(DashboardServiceImpl.class);

@@ -1,5 +1,6 @@
 package com.taxifleet.db;
 
+import com.taxifleet.enums.BookingStrategy;
 import com.taxifleet.enums.TaxiStatus;
 import lombok.Data;
 
@@ -37,6 +38,10 @@ public class StoredTaxi {
 
     @Column(name = "to_longitude", nullable = false)
     private double toLongitude;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "bookingStrategy")
+    private BookingStrategy bookingStrategy;
 
     @Version
     @Column(name = "version")

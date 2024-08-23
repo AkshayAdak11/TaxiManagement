@@ -1,5 +1,4 @@
 /Users/akshaykumar.adak/Documents/Akshay Project/Taxi Management/src/main/java/com/taxifleet/repository/impl/TaxiRepositoryImpl.java
-/Users/akshaykumar.adak/Documents/Akshay Project/Taxi Management/src/main/java/com/taxifleet/services/CachedTaxiService.java
 /Users/akshaykumar.adak/Documents/Akshay Project/Taxi Management/src/main/java/com/taxifleet/services/BookingService.java
 /Users/akshaykumar.adak/Documents/Akshay Project/Taxi Management/src/main/java/com/taxifleet/enums/BookingStrategy.java
 /Users/akshaykumar.adak/Documents/Akshay Project/Taxi Management/src/main/java/com/taxifleet/db/dao/BookingDAO.java
@@ -27,6 +26,7 @@
 /Users/akshaykumar.adak/Documents/Akshay Project/Taxi Management/src/main/java/com/taxifleet/db/StoredTaxi.java
 /Users/akshaykumar.adak/Documents/Akshay Project/Taxi Management/src/main/java/com/taxifleet/services/impl/BookingServiceImpl.java
 /Users/akshaykumar.adak/Documents/Akshay Project/Taxi Management/src/main/java/com/taxifleet/resources/DashboardResource.java
+/Users/akshaykumar.adak/Documents/Akshay Project/Taxi Management/src/main/java/com/taxifleet/services/TaxiService.java
 /Users/akshaykumar.adak/Documents/Akshay Project/Taxi Management/src/main/java/com/taxifleet/TaxiFleetApplication.java
 /Users/akshaykumar.adak/Documents/Akshay Project/Taxi Management/src/main/java/com/taxifleet/enums/BookingStatus.java
 /Users/akshaykumar.adak/Documents/Akshay Project/Taxi Management/src/main/java/com/taxifleet/db/StoredDashboard.java

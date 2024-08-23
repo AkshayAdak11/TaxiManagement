@@ -80,17 +80,15 @@ The system follows a service-oriented architecture with a focus on scalability a
 
 
 UML Diagrams
-Interface:
-![image](https://github.com/user-attachments/assets/0a732d00-3449-4e33-b467-fbb443f18cda)
 
 Class:
-![image](https://github.com/user-attachments/assets/a80c5041-ad3c-4406-a390-231eb388d83d)
+![TaxiUML.svg](TaxiUML.svg)
 
-Flow Diagram
+Flow Diagram - LLD
 
-![img_4.png](img_4.png)
+![img_1.png](img_1.png)
 
 
-Sample Logic 
+Sample Logic - Basic Flow Problem Statement
 
 ![img.png](img.png)

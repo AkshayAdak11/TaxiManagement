@@ -8,6 +8,4 @@ public interface MessagingService {
 
     void notifyTaxis(StoredBooking storedBooking);
 
-    BookingAssignmentStrategy createStrategy(BookingStrategy strategy);
-
 }

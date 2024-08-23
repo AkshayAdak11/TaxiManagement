@@ -58,7 +58,7 @@ public class StoredBooking {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         StoredBooking that = (StoredBooking) o;
-        return Objects.equals(bookingId, that.bookingId) && status == that.status;
+        return Objects.equals(bookingId, that.bookingId);
     }
 
     @Override

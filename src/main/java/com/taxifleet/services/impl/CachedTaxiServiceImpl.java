@@ -4,15 +4,14 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredTaxi;
-import com.taxifleet.enums.BookingStrategy;
 import com.taxifleet.enums.TaxiStatus;
+import com.taxifleet.factory.TaxiObserverFactory;
 import com.taxifleet.observer.TaxiObserver;
 import com.taxifleet.repository.TaxiRepository;
 import com.taxifleet.services.BookingService;
-import com.taxifleet.services.CachedTaxiService;
-import com.taxifleet.services.MessagingService;
-import com.taxifleet.services.TaxiObserverFactory;
-import com.taxifleet.strategy.BookingAssignmentStrategy;
+import com.taxifleet.services.CentralizedBookingService;
+import com.taxifleet.services.DashboardService;
+import com.taxifleet.services.TaxiService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -21,23 +20,27 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Singleton
-public class CachedTaxiServiceImpl implements CachedTaxiService {
+public class CachedTaxiServiceImpl implements TaxiService {
     private final Cache<String, StoredTaxi> taxiCache;
     private final TaxiRepository taxiRepository;
-    private final MessagingService messagingService;
-    private final com.taxifleet.factory.TaxiObserverFactory taxiObserverFactory;
     private final List<TaxiObserver> taxiObservers = new ArrayList<>();
     private final BookingService bookingService;
+    private final TaxiObserverFactory taxiObserverFactory;
+
+    private final CentralizedBookingService centralizedBookingService;
+    private final DashboardService dashboardService;
 
     @Inject
     public CachedTaxiServiceImpl(TaxiRepository taxiRepository,
-                                 MessagingService messagingService,
-                                 com.taxifleet.factory.TaxiObserverFactory taxiObserverFactory,
-                                 BookingService bookingService) {
+                                 BookingService bookingService,
+                                 TaxiObserverFactory taxiObserverFactory,
+                                 CentralizedBookingService centralizedBookingService,
+                                 DashboardService dashboardService) {
         this.taxiRepository = taxiRepository;
-        this.messagingService = messagingService;
-        this.taxiObserverFactory = taxiObserverFactory;
         this.bookingService = bookingService;
+        this.taxiObserverFactory = taxiObserverFactory;
+        this.centralizedBookingService = centralizedBookingService;
+        this.dashboardService = dashboardService;
         this.taxiCache = Caffeine.newBuilder()
                 .expireAfterWrite(10, TimeUnit.MINUTES)
                 .maximumSize(100)
@@ -67,12 +70,15 @@ public class CachedTaxiServiceImpl implements CachedTaxiService {
     public StoredTaxi createTaxi(StoredTaxi taxi) {
         StoredTaxi createdTaxi = taxiRepository.createTaxi(taxi);
         taxiCache.put(createdTaxi.getTaxiNumber(), createdTaxi);
+        registerObserver(taxiObserverFactory.createObserver(taxi,
+                taxiObserverFactory.createStrategy(taxi.getBookingStrategy(),
+                        this, bookingService, dashboardService), centralizedBookingService));
         return createdTaxi;
     }
 
 
     @Override
-    public synchronized boolean bookTaxi(StoredTaxi taxi, long bookingID, double toLatitude, double toLongitude) {
+    public boolean bookTaxi(StoredTaxi taxi, long bookingID, double toLatitude, double toLongitude) {
         taxi.setAvailable(false);
         taxi.setBookingId(bookingID);
         taxi.setToLatitude(toLatitude);
@@ -84,6 +90,7 @@ public class CachedTaxiServiceImpl implements CachedTaxiService {
 
     @Override
     public StoredTaxi updateTaxi(StoredTaxi taxi) {
+        taxiCache.invalidate(taxi);
         taxiRepository.updateTaxi(taxi);
         taxiCache.put(taxi.getTaxiNumber(), taxi);
         return taxi;
@@ -115,38 +122,12 @@ public class CachedTaxiServiceImpl implements CachedTaxiService {
     }
 
     @Override
-    public boolean subscribeTaxiToBookings(String taxiNumber, BookingStrategy bookingStrategy) {
-        // Check if a TaxiObserver for the given taxiNumber already exists
-        boolean observerExists = taxiObservers.stream()
-                .anyMatch(observer -> observer.getTaxi().getTaxiNumber().equals(taxiNumber));
-
-        if (observerExists) {
-            return false;
-        }
-
-        StoredTaxi taxi = getTaxi(taxiNumber);
-        BookingAssignmentStrategy bookingAssignmentStrategy = messagingService.createStrategy(bookingStrategy);
-        if (taxi != null) {
-            TaxiObserver observer = taxiObserverFactory.createObserver(taxi, bookingAssignmentStrategy);
-            taxiObservers.add(observer);
-            return true;
-        }
-        return false;
+    public boolean unsubscribeTaxi(String taxiNumber) {
+        return removeObserver(taxiNumber);
     }
 
     @Override
-    public boolean unsubscribeTaxiToBookings(String taxiNumber) {
-        return taxiObservers.removeIf(observer -> observer.getTaxi().getTaxiNumber().equals(taxiNumber));
-    }
-
-    public void notifyTaxis(StoredBooking storedBooking) {
-        for (TaxiObserver observer : taxiObservers) {
-            observer.update(storedBooking);
-        }
-    }
-
-    @Override
-    public List<StoredBooking> getAllBookingsAsPerChoice(String taxiNumber) {
+    public List<StoredBooking> getAllBookingsForTaxiByPreference(String taxiNumber) {
         for (TaxiObserver observer : taxiObservers) {
             if (observer.getTaxi().getTaxiNumber().equals(taxiNumber)) {
                 return new ArrayList<>(observer.getAvailableBookings().keySet());
@@ -156,15 +137,10 @@ public class CachedTaxiServiceImpl implements CachedTaxiService {
     }
 
     @Override
-    public StoredBooking getBookingTaxis(long bookingId) {
-        return bookingService.getBooking(bookingId);
-    }
-
-    @Override
     public TaxiObserver getTaxiObserver(String taxiNumber) {
         for (TaxiObserver observer : taxiObservers) {
             if (observer.getTaxi().getTaxiNumber().equals(taxiNumber)) {
-            return observer;
+                return observer;
             }
         }
         return null;
@@ -173,5 +149,19 @@ public class CachedTaxiServiceImpl implements CachedTaxiService {
     @Override
     public List<TaxiObserver> getAllTaxiObserver() {
         return taxiObservers;
+    }
+
+    private void registerObserver(TaxiObserver observer) {
+        taxiObservers.add(observer);
+    }
+
+    public void notifyObservers(StoredBooking storedBooking) {
+        for (TaxiObserver observer : taxiObservers) {
+            observer.update(storedBooking);
+        }
+    }
+
+    private boolean removeObserver(String taxiNumber) {
+        return taxiObservers.removeIf(observer -> observer.getTaxi().getTaxiNumber().equals(taxiNumber));
     }
 }

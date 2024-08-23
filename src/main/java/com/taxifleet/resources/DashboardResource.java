@@ -101,6 +101,7 @@ public class DashboardResource {
         long pending = 0;
         long completed = 0;
         long cancelled = 0;
+        long expired = 0;
         double totalFare = 0.0;
         Map<Long, String> bookingIds = new HashMap<>();
         for (StoredDashboard storedDashboard : bookings) {
@@ -113,6 +114,9 @@ public class DashboardResource {
             if (storedDashboard.isPending()) {
                 pending++;
             }
+            if (storedDashboard.isExpired()) {
+                expired++;
+            }
             totalFare += storedDashboard.getFare();
             bookingIds.put(storedDashboard.getBookingId(), storedDashboard.getTaxiNumber());
         }
@@ -124,6 +128,7 @@ public class DashboardResource {
         statsMap.put("Completed", completed);
         statsMap.put("Pending", pending);
         statsMap.put("Cancelled", cancelled);
+        statsMap.put("Expired", expired);
         statsMap.put("TotalFare", totalFare);
         statsMap.put("AllBookingIds", bookingIds);
 

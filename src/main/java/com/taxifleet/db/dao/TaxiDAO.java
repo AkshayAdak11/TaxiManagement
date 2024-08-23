@@ -41,22 +41,6 @@ public class TaxiDAO {
         }
     }
 
-//
-//    public StoredTaxi findById(String taxiNumber) {
-//        Session session = sessionFactory.openSession();
-//        Transaction transaction = session.beginTransaction();
-//        try {
-//            StoredTaxi result = session.get(StoredTaxi.class, taxiNumber);
-//            transaction.commit();
-//            return result;
-//        } catch (Exception e) {
-//            transaction.rollback();
-//            throw e;
-//        } finally {
-//            session.close();
-//        }
-//    }
-
     public StoredTaxi create(StoredTaxi taxi) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();

@@ -28,8 +28,8 @@ public class BookingTask implements Runnable {
             if (booking.getStatus() == BookingStatus.PENDING && retryCount.incrementAndGet() < 3) {
                 Executors.newSingleThreadScheduledExecutor().schedule(this, 5, TimeUnit.MINUTES);
             } else if (retryCount.get() >= 3) {
-                bookingService.cancelBooking(booking);
-                dashboardService.updateDashboardStats(booking.getBookingId(), null, BookingStatus.CANCELLED);
+                bookingService.expiredBooking(booking);
+                dashboardService.updateDashboardStats(booking, null, BookingStatus.EXPIRED);
             }
         } catch (Exception e) {
             e.printStackTrace();

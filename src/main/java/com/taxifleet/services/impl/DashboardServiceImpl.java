@@ -21,31 +21,34 @@ public class DashboardServiceImpl implements DashboardService {
     private final DashboardDAO dashboardDAO;
     private final BlockingQueue<StoredDashboard> dashboardQueue = new LinkedBlockingQueue<>();
 
-    private final BookingService bookingService;
-
     @Inject
-    public DashboardServiceImpl(DashboardDAO dashboardDAO,
-                                BookingService bookingService) {
+    public DashboardServiceImpl(DashboardDAO dashboardDAO) {
         this.dashboardDAO = dashboardDAO;
-        this.bookingService = bookingService;
         startConsumer();  // Start the consumer thread
     }
 
 
+    //CHANGE NAME
     public void createBookingInitialStats(StoredDashboard storedDashboard) {
         dashboardQueue.offer(storedDashboard);
     }
 
-    public void updateDashboardStats(long bookingId, String taxiNumber, BookingStatus status) {
+    public void updateDashboardStats(StoredBooking booking, String taxiNumber, BookingStatus status) {
         boolean pending = BookingStatus.PENDING.equals(status);
         boolean completed = BookingStatus.COMPLETED.equals(status);
         boolean cancelled = BookingStatus.CANCELLED.equals(status);
+        boolean expired = BookingStatus.EXPIRED.equals(status);
         StoredDashboard storedDashboard = new StoredDashboard();
-        storedDashboard.setBookingId(bookingId);
+        storedDashboard.setBookingId(booking.getBookingId());
         storedDashboard.setTaxiNumber(taxiNumber);
         storedDashboard.setPending(pending);
         storedDashboard.setCompleted(completed);
         storedDashboard.setCancelled(cancelled);
+        storedDashboard.setExpired(expired);
+        storedDashboard.setStartTime(booking.getStartTime());
+        storedDashboard.setEndTime(booking.getEndTime());
+        storedDashboard.setBookingLatitude(booking.getFromLatitude());
+        storedDashboard.setBookingLongitude(booking.getFromLongitude());
         createBookingInitialStats(storedDashboard);
     }
 
@@ -73,16 +76,21 @@ public class DashboardServiceImpl implements DashboardService {
      */
     private void processDashboardUpdate(StoredDashboard updatedStoredDashboard) {
         StoredDashboard storedDashboard = dashboardDAO.findByBookingId(updatedStoredDashboard.getBookingId());
-        if (Objects.isNull(storedDashboard)) {
-            dashboardDAO.saveOrUpdateDashboard(updatedStoredDashboard);
-            return;
-        } else {
+        if (Objects.nonNull(storedDashboard)) {
             storedDashboard.setCancelled(updatedStoredDashboard.isCancelled());
             storedDashboard.setCompleted(updatedStoredDashboard.isCompleted());
             storedDashboard.setPending(updatedStoredDashboard.isPending());
+            storedDashboard.setExpired(updatedStoredDashboard.isExpired());
             storedDashboard.setTaxiNumber(updatedStoredDashboard.getTaxiNumber());
+            storedDashboard.setStartTime(updatedStoredDashboard.getStartTime());
+            storedDashboard.setEndTime(updatedStoredDashboard.getEndTime());
+            storedDashboard.setBookingLongitude(updatedStoredDashboard.getBookingLongitude());
+            storedDashboard.setBookingLongitude(updatedStoredDashboard.getBookingLongitude());
+            storedDashboard.setBookingLatitude(updatedStoredDashboard.getBookingLatitude());
+            dashboardDAO.saveOrUpdateDashboard(storedDashboard);
+            return;
         }
-        dashboardDAO.saveOrUpdateDashboard(storedDashboard);
+        dashboardDAO.saveOrUpdateDashboard(updatedStoredDashboard);
 
     }
 
@@ -102,4 +110,5 @@ public class DashboardServiceImpl implements DashboardService {
     public List<StoredDashboard> getAllBookingsForTaxi(String taxiNumber) {
         return dashboardDAO.findAllBookingsByTaxiId(taxiNumber);
     }
+    //lat long
 }

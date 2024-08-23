@@ -36,7 +36,7 @@ public class DashboardDAO {
             if (dashboards != null && !dashboards.isEmpty()) {
                 return dashboards;
             } else {
-                return null; // or throw an exception if that's your preferred handling
+                return null;
             }
         } catch (Exception e) {
             transaction.rollback();

@@ -1,6 +1,5 @@
 package com.taxifleet.db;
 
-import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -9,7 +8,6 @@ import java.util.Date;
 @Data
 @Entity
 @Table(name = "dashboard")
-//@Builder
 public class StoredDashboard {
 
     @Id
@@ -38,6 +36,9 @@ public class StoredDashboard {
 
     @Column(name = "is_cancelled", nullable = false)
     private boolean isCancelled;
+
+    @Column(name = "is_expired", nullable = false)
+    private boolean isExpired;
 
     // Fare for the booking
     @Column(name = "fare")

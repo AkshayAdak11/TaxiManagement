@@ -72,7 +72,16 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public synchronized void confirmBooking(StoredBooking storedBooking, String taxiId) {
+    public void expiredBooking(StoredBooking storedBooking) {
+        StoredBooking booking = bookingRepository.getBooking(storedBooking.getBookingId());
+        if (booking != null) {
+            booking.setStatus(BookingStatus.EXPIRED);
+            bookingRepository.updateBooking(booking);
+        }
+    }
+
+    @Override
+    public void confirmBooking(StoredBooking storedBooking, String taxiId) {
         storedBooking.setStatus(BookingStatus.COMPLETED);
         storedBooking.setTaxiId(taxiId);
         bookingRepository.updateBooking(storedBooking);
