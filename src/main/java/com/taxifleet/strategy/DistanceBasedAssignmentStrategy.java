@@ -30,7 +30,7 @@ public class DistanceBasedAssignmentStrategy implements BookingAssignmentStrateg
     public boolean assignBooking(StoredTaxi taxi, StoredBooking storedBooking) {
         if (isNearBy(storedBooking, taxi) && (taxiService.bookTaxi(taxi, storedBooking))) {
                 bookingService.confirmBooking(storedBooking, taxi.getTaxiNumber());
-                dashboardService.updateDashboardStats(storedBooking, taxi.getTaxiNumber(), BookingStatus.COMPLETED);
+                dashboardService.updateStats(storedBooking, taxi.getTaxiNumber(), BookingStatus.COMPLETED);
                 return true;
 
         }

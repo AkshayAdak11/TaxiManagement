@@ -3,6 +3,7 @@ package com.taxifleet.services.impl;
 import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredDashboard;
 import com.taxifleet.enums.BookingStatus;
+import com.taxifleet.observer.TaxisObserver;
 import com.taxifleet.repository.BookingRepository;
 import com.taxifleet.services.BookingService;
 import com.taxifleet.services.DashboardService;
@@ -18,13 +19,17 @@ public class BookingServiceImpl implements BookingService {
 
     private final DashboardService dashboardService;
 
+    private final TaxisObserver taxisObserver;
+
     @Inject
     public BookingServiceImpl(BookingRepository bookingRepository,
                               MessagingService messagingService,
-                              DashboardService dashboardService) {
+                              DashboardService dashboardService,
+                              TaxisObserver taxisObserver) {
         this.bookingRepository = bookingRepository;
         this.messagingService = messagingService;
         this.dashboardService = dashboardService;
+        this.taxisObserver = taxisObserver;
     }
 
     @Override
@@ -53,7 +58,7 @@ public class BookingServiceImpl implements BookingService {
         storedDashboard.setStartTime(storedBooking.getStartTime());
         storedDashboard.setPending(true);
         storedDashboard.setFare(storedBooking.getFare());
-        dashboardService.createBookingInitialStats(storedDashboard);
+        dashboardService.publishStats(storedDashboard);
         return bookingRepository.createBooking(storedBooking);
     }
 
@@ -87,14 +92,14 @@ public class BookingServiceImpl implements BookingService {
         bookingRepository.updateBooking(storedBooking);
     }
 
-    @Override
-    public List<StoredBooking> getBookingsForTaxi(String taxiNumber) {
-        return bookingRepository.getBookingsForTaxi(taxiNumber);
-    }
-
 
     @Override
     public List<StoredBooking> allPendingBooking() {
         return bookingRepository.findAllPendingBookings();
+    }
+
+    @Override
+    public List<StoredBooking> getAllBookingsForTaxi(String taxiNumber) {
+        return taxisObserver.getAllBookingsForTaxi(taxiNumber);
     }
 }

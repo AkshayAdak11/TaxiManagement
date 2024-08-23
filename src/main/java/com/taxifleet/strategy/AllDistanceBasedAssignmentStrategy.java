@@ -35,7 +35,7 @@ public class AllDistanceBasedAssignmentStrategy implements BookingAssignmentStra
             if (bookedTaxi) {
                 bookingService.confirmBooking(storedBooking, taxi.getTaxiNumber());
             }
-            dashboardService.updateDashboardStats(storedBooking, taxi.getTaxiNumber(), BookingStatus.COMPLETED);
+            dashboardService.updateStats(storedBooking, taxi.getTaxiNumber(), BookingStatus.COMPLETED);
             return bookedTaxi;
         }
         return false;

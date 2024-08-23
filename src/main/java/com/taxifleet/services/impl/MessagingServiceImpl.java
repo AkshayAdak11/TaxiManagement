@@ -2,6 +2,7 @@ package com.taxifleet.services.impl;
 
 import com.taxifleet.db.StoredBooking;
 import com.taxifleet.enums.BookingStrategy;
+import com.taxifleet.observer.TaxisObserver;
 import com.taxifleet.services.TaxiService;
 import com.taxifleet.services.DashboardService;
 import com.taxifleet.services.MessagingService;
@@ -14,15 +15,15 @@ import javax.inject.Inject;
 
 public class MessagingServiceImpl implements MessagingService {
 
-    private final TaxiService taxiService;
+    private final TaxisObserver taxisObserver;
 
     @Inject
-    public MessagingServiceImpl(TaxiService taxiService) {
-        this.taxiService = taxiService;
+    public MessagingServiceImpl(TaxisObserver taxisObserver) {
+        this.taxisObserver = taxisObserver;
     }
 
     @Override
     public void notifyTaxis(StoredBooking storedBooking) {
-        taxiService.notifyObservers(storedBooking);  // Notify taxis
+        taxisObserver.notifyObservers(storedBooking);  // Notify taxis
     }
 }

@@ -8,9 +8,9 @@ import java.util.Date;
 import java.util.List;
 
 public interface DashboardService {
-    void createBookingInitialStats(StoredDashboard storedDashboard);
+    void publishStats(StoredDashboard storedDashboard);
 
-    void updateDashboardStats(StoredBooking booking, String taxiNumber, BookingStatus status);
+    void updateStats(StoredBooking booking, String taxiNumber, BookingStatus status);
 
     List<StoredDashboard> getLatestDashboardStats();
 

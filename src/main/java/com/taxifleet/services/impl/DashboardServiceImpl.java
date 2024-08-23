@@ -4,7 +4,6 @@ import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredDashboard;
 import com.taxifleet.db.dao.DashboardDAO;
 import com.taxifleet.enums.BookingStatus;
-import com.taxifleet.services.BookingService;
 import com.taxifleet.services.DashboardService;
 
 import javax.inject.Inject;
@@ -29,11 +28,11 @@ public class DashboardServiceImpl implements DashboardService {
 
 
     //CHANGE NAME
-    public void createBookingInitialStats(StoredDashboard storedDashboard) {
+    public void publishStats(StoredDashboard storedDashboard) {
         dashboardQueue.offer(storedDashboard);
     }
 
-    public void updateDashboardStats(StoredBooking booking, String taxiNumber, BookingStatus status) {
+    public void updateStats(StoredBooking booking, String taxiNumber, BookingStatus status) {
         boolean pending = BookingStatus.PENDING.equals(status);
         boolean completed = BookingStatus.COMPLETED.equals(status);
         boolean cancelled = BookingStatus.CANCELLED.equals(status);
@@ -49,7 +48,7 @@ public class DashboardServiceImpl implements DashboardService {
         storedDashboard.setEndTime(booking.getEndTime());
         storedDashboard.setBookingLatitude(booking.getFromLatitude());
         storedDashboard.setBookingLongitude(booking.getFromLongitude());
-        createBookingInitialStats(storedDashboard);
+        publishStats(storedDashboard);
     }
 
     /**

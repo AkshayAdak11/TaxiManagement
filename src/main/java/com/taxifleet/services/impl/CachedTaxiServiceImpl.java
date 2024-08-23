@@ -7,6 +7,7 @@ import com.taxifleet.db.StoredTaxi;
 import com.taxifleet.enums.TaxiStatus;
 import com.taxifleet.factory.TaxiObserverFactory;
 import com.taxifleet.observer.TaxiObserver;
+import com.taxifleet.observer.TaxisObserver;
 import com.taxifleet.repository.TaxiRepository;
 import com.taxifleet.services.BookingService;
 import com.taxifleet.services.CentralizedBookingService;
@@ -15,6 +16,7 @@ import com.taxifleet.services.TaxiService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -23,24 +25,27 @@ import java.util.concurrent.TimeUnit;
 public class CachedTaxiServiceImpl implements TaxiService {
     private final Cache<String, StoredTaxi> taxiCache;
     private final TaxiRepository taxiRepository;
-    private final List<TaxiObserver> taxiObservers = new ArrayList<>();
     private final BookingService bookingService;
     private final TaxiObserverFactory taxiObserverFactory;
 
     private final CentralizedBookingService centralizedBookingService;
     private final DashboardService dashboardService;
 
+    private final TaxisObserver taxiObservers;
+
     @Inject
     public CachedTaxiServiceImpl(TaxiRepository taxiRepository,
                                  BookingService bookingService,
                                  TaxiObserverFactory taxiObserverFactory,
                                  CentralizedBookingService centralizedBookingService,
-                                 DashboardService dashboardService) {
+                                 DashboardService dashboardService,
+                                 TaxisObserver taxiObservers) {
         this.taxiRepository = taxiRepository;
         this.bookingService = bookingService;
         this.taxiObserverFactory = taxiObserverFactory;
         this.centralizedBookingService = centralizedBookingService;
         this.dashboardService = dashboardService;
+        this.taxiObservers = taxiObservers;
         this.taxiCache = Caffeine.newBuilder()
                 .expireAfterWrite(10, TimeUnit.MINUTES)
                 .maximumSize(100)
@@ -70,7 +75,7 @@ public class CachedTaxiServiceImpl implements TaxiService {
     public StoredTaxi createTaxi(StoredTaxi taxi) {
         StoredTaxi createdTaxi = taxiRepository.createTaxi(taxi);
         taxiCache.put(createdTaxi.getTaxiNumber(), createdTaxi);
-        registerObserver(taxiObserverFactory.createObserver(taxi,
+        taxiObservers.registerObserver(taxiObserverFactory.createObserver(taxi,
                 taxiObserverFactory.createStrategy(taxi.getBookingStrategy(),
                         this, bookingService, dashboardService), centralizedBookingService));
         return createdTaxi;
@@ -112,7 +117,7 @@ public class CachedTaxiServiceImpl implements TaxiService {
             taxi.setStatus(taxiStatus);
             taxiRepository.updateTaxi(taxi);
             StoredTaxi updatedTaxi = taxiRepository.getTaxi(taxiNumber);
-            TaxiObserver observer = getTaxiObserver(taxiNumber);
+            TaxiObserver observer = taxiObservers.getTaxiObserver(taxiNumber);
             TaxiObserverFactory.updateTaxiObserver(observer, updatedTaxi);
             taxiCache.put(updatedTaxi.getTaxiNumber(), updatedTaxi);
         }
@@ -125,45 +130,28 @@ public class CachedTaxiServiceImpl implements TaxiService {
 
     @Override
     public boolean unsubscribeTaxi(String taxiNumber) {
-        return removeObserver(taxiNumber);
+        return taxiObservers.removeObserver(taxiNumber);
     }
 
     @Override
-    public List<StoredBooking> getAllBookingsForTaxiByPreference(String taxiNumber) {
-        for (TaxiObserver observer : taxiObservers) {
-            if (observer.getTaxi().getTaxiNumber().equals(taxiNumber)) {
-                return new ArrayList<>(observer.getAvailableBookings().values());
+    public Response selectBooking(String taxiNumber, Long bookingId) {
+        StoredBooking storedBooking = bookingService.getBooking(bookingId);
+        TaxiObserver observer = taxiObservers.getTaxiObserver(taxiNumber);
+
+        if (observer != null && storedBooking != null) {
+            boolean success = observer.selectBookingAndBookTaxi(storedBooking);
+            if (success) {
+                return Response.ok().entity("Booking selected successfully").build();
+            } else {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Failed to select booking").build();
             }
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).entity("Taxi or booking not found").build();
         }
-        return new ArrayList<>();
     }
 
     @Override
-    public TaxiObserver getTaxiObserver(String taxiNumber) {
-        for (TaxiObserver observer : taxiObservers) {
-            if (observer.getTaxi().getTaxiNumber().equals(taxiNumber)) {
-                return observer;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public List<TaxiObserver> getAllTaxiObserver() {
-        return taxiObservers;
-    }
-
-    private void registerObserver(TaxiObserver observer) {
-        taxiObservers.add(observer);
-    }
-
-    public void notifyObservers(StoredBooking storedBooking) {
-        for (TaxiObserver observer : taxiObservers) {
-            observer.update(storedBooking);
-        }
-    }
-
-    private boolean removeObserver(String taxiNumber) {
-        return taxiObservers.removeIf(observer -> observer.getTaxi().getTaxiNumber().equals(taxiNumber));
+    public Response getAllSubscribedTaxis() {
+        return Response.ok().entity(taxiObservers.getAllTaxiObserver()).build();
     }
 }

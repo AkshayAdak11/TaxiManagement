@@ -95,32 +95,11 @@ public class TaxiResource {
     @Path("/all/booking/assigned")
     @UnitOfWork
     public Response getAssignedBookingAsPerChoice(@QueryParam("taxiNumber") String taxiNumber) {
-        List<StoredBooking> storedBookings = taxiService.getAllBookingsForTaxiByPreference(taxiNumber);
+        List<StoredBooking> storedBookings = bookingService.getAllBookingsForTaxi(taxiNumber);
         return Response.ok()
                 .entity(storedBookings)
                 .build();
     }
-
-
-//    @POST
-//    @Path("/{taxiNumber}/subscribe")
-//    @Operation(summary = "Subscribe a taxi to booking notifications with a chosen strategy")
-//    @UnitOfWork
-//    public Response subscribeTaxi(
-//            @ApiParam(value = "Taxi ID", required = true) @PathParam("taxiNumber") String taxiNumber,
-//            @ApiParam(value = "Strategy Type", required = true) @QueryParam("strategy") BookingStrategy strategyType) {
-//
-//        boolean subscribed = taxiService.subscribeTaxiToBookings(taxiNumber, strategyType);
-//        if (subscribed) {
-//            return Response.ok()
-//                    .entity("Taxi subscribed successfully with strategy: " + strategyType)
-//                    .build();
-//        } else {
-//            return Response.status(Response.Status.BAD_REQUEST)
-//                    .entity("Failed to subscribe taxi with strategy: " + strategyType)
-//                    .build();
-//        }
-//    }
 
     @POST
     @Path("/{taxiNumber}/unsubscribe")
@@ -141,25 +120,13 @@ public class TaxiResource {
             @ApiParam(value = "Taxi ID", required = true) @PathParam("taxiNumber") String taxiNumber,
             @ApiParam(value = "Booking ID", required = true) @QueryParam("bookingId") Long bookingId) {
 
-        StoredBooking storedBooking = bookingService.getBooking(bookingId);
-        TaxiObserver observer = taxiService.getTaxiObserver(taxiNumber);
-
-        if (observer != null && storedBooking != null) {
-            boolean success = observer.selectBookingAndBookTaxi(storedBooking);
-            if (success) {
-                return Response.ok().entity("Booking selected successfully").build();
-            } else {
-                return Response.status(Response.Status.BAD_REQUEST).entity("Failed to select booking").build();
-            }
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).entity("Taxi or booking not found").build();
-        }
+       return taxiService.selectBooking(taxiNumber, bookingId);
     }
 
     @GET
     @Path("/all/subscribed/taxis")
+    @Operation(summary = "Get all subscribed taxis")
     public Response getAllSubscribedTaxis() {
-        List<TaxiObserver> taxiObservers = taxiService.getAllTaxiObserver();
-            return Response.ok().entity(taxiObservers).build();
-        }
+        return taxiService.getAllSubscribedTaxis();
+    }
 }

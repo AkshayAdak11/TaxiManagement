@@ -23,5 +23,5 @@ public interface BookingService {
 
     List<StoredBooking> allPendingBooking();
 
-    List<StoredBooking> getBookingsForTaxi(String taxiNumber);
+    List<StoredBooking> getAllBookingsForTaxi(String taxiNumber);
 }

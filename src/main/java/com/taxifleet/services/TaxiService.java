@@ -5,6 +5,7 @@ import com.taxifleet.db.StoredTaxi;
 import com.taxifleet.enums.TaxiStatus;
 import com.taxifleet.observer.TaxiObserver;
 
+import javax.ws.rs.core.Response;
 import java.util.List;
 
 public interface TaxiService {
@@ -19,10 +20,7 @@ public interface TaxiService {
 
     boolean unsubscribeTaxi(String taxiNumber);
 
-    void notifyObservers(StoredBooking storedBooking);
-    List<StoredBooking> getAllBookingsForTaxiByPreference(String taxiId);
+    Response selectBooking(String taxiNumber, Long bookingId);
 
-    TaxiObserver getTaxiObserver(String taxiNumber);
-
-    List<TaxiObserver> getAllTaxiObserver();
+    Response getAllSubscribedTaxis();
 }
