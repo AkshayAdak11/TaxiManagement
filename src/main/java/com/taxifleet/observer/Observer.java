@@ -6,15 +6,15 @@ import java.util.List;
 
 public interface Observer {
 
-    void registerObserver(TaxiObserver observer);
+    void registerObserver(TaxiManager observer);
 
     void notifyObservers(StoredBooking storedBooking);
 
     boolean removeObserver(String taxiNumber);
 
-    List<TaxiObserver> getAllTaxiObserver();
+    List<TaxiManager> getAllTaxiObserver();
 
-    TaxiObserver getTaxiObserver(String taxiNumber);
+    TaxiManager getTaxiObserver(String taxiNumber);
 
     List<StoredBooking> getAllBookingsForTaxi(String taxiNumber);
 

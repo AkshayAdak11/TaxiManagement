@@ -1,23 +1,21 @@
 package com.taxifleet.factory;
 
 import com.taxifleet.enums.BookingStrategy;
+import com.taxifleet.observer.TaxiManager;
 import com.taxifleet.services.BookingService;
 import com.taxifleet.services.CentralizedBookingService;
 import com.taxifleet.services.DashboardService;
 import com.taxifleet.services.TaxiService;
 import com.taxifleet.strategy.AllDistanceBasedAssignmentStrategy;
 import com.taxifleet.strategy.BookingAssignmentStrategy;
-import com.taxifleet.observer.TaxiObserver;
 import com.taxifleet.db.StoredTaxi;
 import com.taxifleet.strategy.DistanceBasedAssignmentStrategy;
 
-import javax.inject.Inject;
-
 public class TaxiObserverFactory {
 
-    public TaxiObserver createObserver(StoredTaxi taxi, BookingAssignmentStrategy strategy,
-                                       CentralizedBookingService centralizedBookingService) {
-        return new TaxiObserver(taxi, strategy, centralizedBookingService);
+    public TaxiManager createObserver(StoredTaxi taxi, BookingAssignmentStrategy strategy,
+                                      CentralizedBookingService centralizedBookingService) {
+        return new TaxiManager(taxi, strategy, centralizedBookingService);
     }
 
     //Visitor Pattern
@@ -38,7 +36,7 @@ public class TaxiObserverFactory {
         });
     }
 
-    public static void updateTaxiObserver(TaxiObserver observer, StoredTaxi updatedTaxi) {
+    public static void updateTaxiObserver(TaxiManager observer, StoredTaxi updatedTaxi) {
         if (observer == null || updatedTaxi == null) {
             throw new IllegalArgumentException("Observer and updated taxi cannot be null");
         }

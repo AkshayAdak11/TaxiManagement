@@ -17,14 +17,14 @@
 //    private StoredTaxi taxi;
 //    private BookingAssignmentStrategy assignmentStrategy;
 //    private CentralizedBookingService centralizedBookingService;
-//    private TaxiObserver taxiObserver;
+//    private TaxiManager taxiObserver;
 //
 //    @BeforeEach
 //    public void setUp() {
 //        taxi = Mockito.mock(StoredTaxi.class);
 //        assignmentStrategy = Mockito.mock(BookingAssignmentStrategy.class);
 //        centralizedBookingService = Mockito.mock(CentralizedBookingService.class);
-//        taxiObserver = new TaxiObserver(taxi, assignmentStrategy, centralizedBookingService);
+//        taxiObserver = new TaxiManager(taxi, assignmentStrategy, centralizedBookingService);
 //    }
 //
 //    @Test

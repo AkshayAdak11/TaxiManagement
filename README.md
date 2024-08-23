@@ -76,7 +76,7 @@ The system follows a service-oriented architecture with a focus on scalability a
 UML Diagrams
 
 Class:
-![TaxiUML.svg](TaxiUML.svg)
+![TaxiFleetUML](TaxiFleetUML.svg)
 
 Flow Diagram - LLD
 

@@ -7,30 +7,30 @@ import java.util.List;
 
 
 public abstract class BaseObserver implements Observer {
-    protected final List<TaxiObserver> taxiObservers;
+    protected final List<TaxiManager> taxiManagers;
 
     protected BaseObserver() {
-        taxiObservers = new ArrayList<>();
+        taxiManagers = new ArrayList<>();
     }
 
     @Override
-    public void registerObserver(TaxiObserver observer) {
-        taxiObservers.add(observer);
+    public void registerObserver(TaxiManager observer) {
+        taxiManagers.add(observer);
     }
 
     @Override
-    public List<TaxiObserver> getAllTaxiObserver() {
-        return taxiObservers;
+    public List<TaxiManager> getAllTaxiObserver() {
+        return taxiManagers;
     }
 
     public void notifyObservers(StoredBooking storedBooking) {
-        for (TaxiObserver observer : taxiObservers) {
+        for (TaxiManager observer : taxiManagers) {
             observer.update(storedBooking);
         }
     }
 
     @Override
     public boolean removeObserver(String taxiNumber) {
-        return taxiObservers.removeIf(observer -> observer.getTaxi().getTaxiNumber().equals(taxiNumber));
+        return taxiManagers.removeIf(observer -> observer.getTaxi().getTaxiNumber().equals(taxiNumber));
     }
 }

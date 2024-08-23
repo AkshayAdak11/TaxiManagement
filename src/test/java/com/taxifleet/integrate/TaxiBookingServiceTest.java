@@ -7,7 +7,7 @@ import com.taxifleet.db.StoredTaxi;
 import com.taxifleet.enums.BookingStatus;
 import com.taxifleet.enums.BookingStrategy;
 import com.taxifleet.enums.TaxiStatus;
-import com.taxifleet.observer.TaxiObserver;
+import com.taxifleet.observer.TaxiManager;
 import com.taxifleet.resources.BookingResource;
 import com.taxifleet.resources.DashboardResource;
 import com.taxifleet.resources.TaxiResource;
@@ -141,7 +141,7 @@ public class TaxiBookingServiceTest extends BaseIntegrationTest {
 
         //Now Set taxi preference whether taxi want to accept near by and all area bookings
         System.out.println("\n All subscribed taxis are as below");
-        List<TaxiObserver> taxiObserversList = (List<TaxiObserver>) taxiResource.getAllSubscribedTaxis().getEntity();
+        List<TaxiManager> taxiObserversList = (List<TaxiManager>) taxiResource.getAllSubscribedTaxis().getEntity();
         taxiObserversList.forEach(taxi -> {
             System.out.println(taxi.getTaxi() + " " + taxi.getAssignmentStrategy() + " " + taxi.getAvailableBookings());
         });

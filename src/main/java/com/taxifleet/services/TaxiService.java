@@ -3,7 +3,6 @@ package com.taxifleet.services;
 import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredTaxi;
 import com.taxifleet.enums.TaxiStatus;
-import com.taxifleet.observer.TaxiObserver;
 
 import javax.ws.rs.core.Response;
 import java.util.List;

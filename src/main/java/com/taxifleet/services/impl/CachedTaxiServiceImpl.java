@@ -6,7 +6,7 @@ import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredTaxi;
 import com.taxifleet.enums.TaxiStatus;
 import com.taxifleet.factory.TaxiObserverFactory;
-import com.taxifleet.observer.TaxiObserver;
+import com.taxifleet.observer.TaxiManager;
 import com.taxifleet.observer.TaxisObserver;
 import com.taxifleet.repository.TaxiRepository;
 import com.taxifleet.services.BookingService;
@@ -17,7 +17,6 @@ import com.taxifleet.services.TaxiService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -117,7 +116,7 @@ public class CachedTaxiServiceImpl implements TaxiService {
             taxi.setStatus(taxiStatus);
             taxiRepository.updateTaxi(taxi);
             StoredTaxi updatedTaxi = taxiRepository.getTaxi(taxiNumber);
-            TaxiObserver observer = taxiObservers.getTaxiObserver(taxiNumber);
+            TaxiManager observer = taxiObservers.getTaxiObserver(taxiNumber);
             TaxiObserverFactory.updateTaxiObserver(observer, updatedTaxi);
             taxiCache.put(updatedTaxi.getTaxiNumber(), updatedTaxi);
         }
@@ -136,7 +135,7 @@ public class CachedTaxiServiceImpl implements TaxiService {
     @Override
     public Response selectBooking(String taxiNumber, Long bookingId) {
         StoredBooking storedBooking = bookingService.getBooking(bookingId);
-        TaxiObserver observer = taxiObservers.getTaxiObserver(taxiNumber);
+        TaxiManager observer = taxiObservers.getTaxiObserver(taxiNumber);
 
         if (observer != null && storedBooking != null) {
             boolean success = observer.selectBookingAndBookTaxi(storedBooking);

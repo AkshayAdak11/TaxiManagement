@@ -2,7 +2,6 @@ package com.taxifleet.observer;
 
 import com.taxifleet.db.StoredBooking;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +10,8 @@ import java.util.List;
 public class TaxisObserver extends BaseObserver{
 
     @Override
-    public TaxiObserver getTaxiObserver(String taxiNumber) {
-        for (TaxiObserver observer : taxiObservers) {
+    public TaxiManager getTaxiObserver(String taxiNumber) {
+        for (TaxiManager observer : taxiManagers) {
             if (observer.getTaxi().getTaxiNumber().equals(taxiNumber)) {
                 return observer;
             }
@@ -22,7 +21,7 @@ public class TaxisObserver extends BaseObserver{
 
     @Override
     public List<StoredBooking> getAllBookingsForTaxi(String taxiNumber) {
-        for (TaxiObserver observer : taxiObservers) {
+        for (TaxiManager observer : taxiManagers) {
             if (observer.getTaxi().getTaxiNumber().equals(taxiNumber)) {
                 return new ArrayList<>(observer.getAvailableBookings().values());
             }

@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 @Data
-public class TaxiObserver {
+public class TaxiManager {
     @Setter
     private final StoredTaxi taxi;
     private final BookingAssignmentStrategy assignmentStrategy;
@@ -24,8 +24,8 @@ public class TaxiObserver {
     private final ConcurrentMap<Long, StoredBooking> availableBookings = new ConcurrentHashMap<>();
 
     @Inject
-    public TaxiObserver(StoredTaxi taxi, BookingAssignmentStrategy assignmentStrategy,
-                        CentralizedBookingService centralizedBookingService) {
+    public TaxiManager(StoredTaxi taxi, BookingAssignmentStrategy assignmentStrategy,
+                       CentralizedBookingService centralizedBookingService) {
         this.taxi = taxi;
         this.assignmentStrategy = assignmentStrategy;
         this.centralizedBookingService = centralizedBookingService;
