@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.Setter;
 
 import javax.inject.Inject;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -20,7 +21,7 @@ public class TaxiObserver {
     private final StoredTaxi taxi;
     private final BookingAssignmentStrategy assignmentStrategy;
     private final CentralizedBookingService centralizedBookingService;
-    private final ConcurrentMap<StoredBooking, Boolean> availableBookings = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Long, StoredBooking> availableBookings = new ConcurrentHashMap<>();
 
     @Inject
     public TaxiObserver(StoredTaxi taxi, BookingAssignmentStrategy assignmentStrategy,
@@ -34,19 +35,20 @@ public class TaxiObserver {
         //Push in map according to pattern strategy
         if ((availableBookings.isEmpty() || !availableBookings.containsKey(storedBooking)) &&
                 (this.assignmentStrategy.isEligibleToServeBooking(taxi, storedBooking))) {
-                availableBookings.put(storedBooking, true);
+                availableBookings.put(storedBooking.getBookingId(), storedBooking);
         }
     }
 
 
     public boolean selectBookingAndBookTaxi(StoredBooking storedBooking) {
-        if (Boolean.TRUE.equals(availableBookings.get(storedBooking)) &&
+        if (Objects.nonNull(availableBookings.get(storedBooking.getBookingId())) &&
                 BookingStatus.PENDING.equals(storedBooking.getStatus())) {
             // Attempt booking to this taxi using the centralized service
             boolean isBookingAssignedToTaxi = centralizedBookingService.assignBookingToTaxi(taxi, storedBooking);
             if (isBookingAssignedToTaxi) {
                 if (bookTaxiWithPreference(storedBooking)) {
                     //Remove booking from all observers map to remove unused data and booking from all other taxis.
+                    availableBookings.put(storedBooking.getBookingId(), storedBooking); // Updated stored Booking
                     centralizedBookingService.notifyObserversBookingCompleted(storedBooking);
                     centralizedBookingService.removeBookingFromAssignment(storedBooking);
                     return true;
@@ -66,6 +68,7 @@ public class TaxiObserver {
 
 
     public void removeBooking(StoredBooking storedBooking) {
-        availableBookings.remove(storedBooking);
+        System.out.println("Stored Booking to remove is "+ storedBooking);
+        availableBookings.remove(storedBooking.getBookingId());
     }
 }

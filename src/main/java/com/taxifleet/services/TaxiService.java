@@ -11,7 +11,7 @@ public interface TaxiService {
     List<StoredTaxi> getAllTaxis();
     StoredTaxi getTaxi(String taxiNumber);
     StoredTaxi createTaxi(StoredTaxi taxi);
-    boolean bookTaxi(StoredTaxi taxi, long bookingId, double toLatitude, double toLongitude);
+    boolean bookTaxi(StoredTaxi taxi, StoredBooking storedBooking);
     StoredTaxi updateTaxi(StoredTaxi taxi);
     void deleteTaxi(String taxiNumber);
     void updateTaxiAvailability(String taxiNumber, boolean available, TaxiStatus taxiStatus);

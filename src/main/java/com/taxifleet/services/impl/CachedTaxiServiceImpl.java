@@ -78,11 +78,13 @@ public class CachedTaxiServiceImpl implements TaxiService {
 
 
     @Override
-    public boolean bookTaxi(StoredTaxi taxi, long bookingID, double toLatitude, double toLongitude) {
+    public boolean bookTaxi(StoredTaxi taxi, StoredBooking storedBooking) {
         taxi.setAvailable(false);
-        taxi.setBookingId(bookingID);
-        taxi.setToLatitude(toLatitude);
-        taxi.setToLongitude(toLongitude);
+        taxi.setBookingId(storedBooking.getBookingId());
+        taxi.setToLatitude(storedBooking.getToLatitude());
+        taxi.setToLongitude(storedBooking.getToLongitude());
+        taxi.setFromLatitude(storedBooking.getFromLatitude());
+        taxi.setFromLongitude(storedBooking.getFromLongitude());
         taxi.setStatus(TaxiStatus.BOOKED);
         StoredTaxi storedTaxi = updateTaxi(taxi);
         return TaxiStatus.BOOKED.equals(storedTaxi.getStatus());
@@ -130,7 +132,7 @@ public class CachedTaxiServiceImpl implements TaxiService {
     public List<StoredBooking> getAllBookingsForTaxiByPreference(String taxiNumber) {
         for (TaxiObserver observer : taxiObservers) {
             if (observer.getTaxi().getTaxiNumber().equals(taxiNumber)) {
-                return new ArrayList<>(observer.getAvailableBookings().keySet());
+                return new ArrayList<>(observer.getAvailableBookings().values());
             }
         }
         return new ArrayList<>();

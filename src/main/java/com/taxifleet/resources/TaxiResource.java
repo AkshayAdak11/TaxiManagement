@@ -3,6 +3,7 @@ package com.taxifleet.resources;
 import com.google.common.base.Preconditions;
 import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredTaxi;
+import com.taxifleet.enums.BookingStatus;
 import com.taxifleet.enums.TaxiStatus;
 import com.taxifleet.observer.TaxiObserver;
 import com.taxifleet.services.BookingService;
@@ -55,8 +56,7 @@ public class TaxiResource {
     @UnitOfWork
     public StoredTaxi createTaxi(
             @ApiParam(value = "Add Taxi ", required = true) StoredTaxi taxi) {
-        Preconditions.checkArgument(taxi.getFromLatitude() == taxi.getToLatitude() &&
-                taxi.getFromLongitude() == taxi.getToLongitude());
+        Preconditions.checkArgument(TaxiStatus.BOOKED != taxi.getStatus());
         return taxiService.createTaxi(taxi);
     }
 

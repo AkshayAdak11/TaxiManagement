@@ -31,8 +31,7 @@ public class AllDistanceBasedAssignmentStrategy implements BookingAssignmentStra
             taxi.setAvailable(false);
             taxi.setBookingId(storedBooking.getBookingId());
             taxi.setStatus(TaxiStatus.BOOKED);
-            boolean bookedTaxi = taxiService.bookTaxi(taxi, storedBooking.getBookingId(),
-                    storedBooking.getToLatitude(), storedBooking.getToLongitude());
+            boolean bookedTaxi = taxiService.bookTaxi(taxi, storedBooking);
             if (bookedTaxi) {
                 bookingService.confirmBooking(storedBooking, taxi.getTaxiNumber());
             }

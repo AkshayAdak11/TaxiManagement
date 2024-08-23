@@ -82,7 +82,6 @@ Flow Diagram - LLD
 
 ![img_1.png](img_1.png)
 
+Sample API Demo
 
-Sample Logic - Basic Flow Problem Statement
-
-![img.png](img.png)
+https://youtu.be/4Lu-KPF7LdU
