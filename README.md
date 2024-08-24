@@ -75,22 +75,23 @@ Track the current location and status of each taxi in the fleet.
 ### Booking Management:
 
 Publish new bookings to all available taxis.
-Ensure only one taxi accepts a booking, with the option to re-publish a rejected booking.
-Implement logic for nearby taxis to handle bookings based on proximity.
+Ensured only one taxi accepts a booking, with the option to re-publish a rejected booking.
+Implemented logic for nearby taxis to handle bookings based on proximity.
 
 ### Messaging Service:
 
-Use an in-memory queue for handling taxi status updates and booking notifications.
-Ensure reliable and timely communication between taxis and the booking system.
+Ensuring reliable and timely communication between taxis and the booking system.
 
 ### Dashboard:
 
 Real-time display of key statistics, including the number of available taxis, bookings made, and completed trips.
-Use of in-memory caching to provide fast, up-to-date information.
+Use Queue to separate out the load from actual service and metrics service
 
 ### Authentication and Security:
 
-Implement JSON Web Token (JWT) for secure authentication and authorization.
+(Security Feature)
+
+Implemented JSON Web Token (JWT) for secure authentication and authorization.
 Ensure that only authorized users can access the system’s functionalities.
 
 ### Design Patterns
@@ -98,19 +99,17 @@ Ensure that only authorized users can access the system’s functionalities.
     Factory Pattern: Used to create instances of different types of messages and services.
     Strategy Pattern: Applied in the booking service to handle different strategies for assigning taxis to bookings.
     Observer Pattern: Implemented to notify the dashboard and other components of updates in taxi status or bookings.
-    Singleton Pattern: Ensures that certain services (e.g., BookingService) have a single instance throughout the application.
+    Singleton Pattern: Ensures that certain services have a single instance throughout the application.
 
 ### Architecture
 
 The system is built using a modular architecture, where each component is responsible for a specific aspect of the
 system’s functionality. The main modules include:
 
-Taxi Service: Manages the registration, status, and location of taxis.
-Booking Service: Handles the creation and management of bookings, including communication with taxis.
-Messaging Service: Manages the in-memory queue for handling status updates and notifications.
-Dashboard Service: Aggregates and displays real-time statistics about the fleet.
-
-Contributions are welcome! Please fork the repository and submit a pull request.
+    Taxi Service: Manages the registration, status, and location of taxis.
+    Booking Service: Handles the creation and management of bookings, including communication with taxis.
+    Messaging Service: Manages communication for handling status updates and notifications.
+    Dashboard Service: Aggregates and displays real-time statistics about the fleet.
 
 UML Diagrams
 
@@ -124,3 +123,5 @@ Flow Diagram - LLD
 Sample API Demo
 
 [Watch The Demo](https://youtu.be/4Lu-KPF7LdU)
+
+Contributions are welcome! Please fork the repository and submit a pull request.
