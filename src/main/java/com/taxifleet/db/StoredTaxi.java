@@ -4,7 +4,15 @@ import com.taxifleet.enums.BookingStrategy;
 import com.taxifleet.enums.TaxiStatus;
 import lombok.Data;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Version;
 
 @Data
 @Entity
@@ -33,11 +41,17 @@ public class StoredTaxi {
     @Column(name = "from_longitude", nullable = false)
     private double fromLongitude;
 
-    @Column(name = "to_latitude", nullable = false)
+    @Column(name = "to_latitude")
     private double toLatitude;
 
-    @Column(name = "to_longitude", nullable = false)
+    @Column(name = "to_longitude")
     private double toLongitude;
+
+    @Column(name = "current_latitude", nullable = false)
+    private double currentLatitude;
+
+    @Column(name = "current_longitude", nullable = false)
+    private double currentLongitude;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "bookingStrategy")

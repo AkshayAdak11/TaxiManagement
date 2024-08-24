@@ -6,12 +6,12 @@ import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredTaxi;
 import com.taxifleet.enums.TaxiStatus;
 import com.taxifleet.factory.TaxiObserverFactory;
-import com.taxifleet.services.TaxiManager;
 import com.taxifleet.observer.TaxisObserver;
 import com.taxifleet.repository.TaxiRepository;
 import com.taxifleet.services.BookingAssignmentService;
 import com.taxifleet.services.BookingService;
 import com.taxifleet.services.DashboardService;
+import com.taxifleet.services.TaxiManager;
 import com.taxifleet.services.TaxiService;
 
 import javax.inject.Inject;
@@ -89,6 +89,8 @@ public class CachedTaxiServiceImpl implements TaxiService {
         taxi.setToLongitude(storedBooking.getToLongitude());
         taxi.setFromLatitude(storedBooking.getFromLatitude());
         taxi.setFromLongitude(storedBooking.getFromLongitude());
+        taxi.setCurrentLatitude(storedBooking.getToLatitude());
+        taxi.setCurrentLongitude(storedBooking.getToLongitude());
         taxi.setStatus(TaxiStatus.BOOKED);
         StoredTaxi storedTaxi = updateTaxi(taxi);
         return TaxiStatus.BOOKED.equals(storedTaxi.getStatus());

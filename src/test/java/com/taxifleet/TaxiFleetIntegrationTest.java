@@ -10,8 +10,8 @@ import com.taxifleet.resources.BookingResource;
 import com.taxifleet.resources.DashboardResource;
 import com.taxifleet.resources.TaxiResource;
 import com.taxifleet.services.BookingService;
-import com.taxifleet.services.TaxiService;
 import com.taxifleet.services.DashboardService;
+import com.taxifleet.services.TaxiService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,8 +60,8 @@ public class TaxiFleetIntegrationTest extends BaseIntegrationTest {
         storedTaxi.setAvailable(true);
         storedTaxi.setFromLatitude(0.00);
         storedTaxi.setFromLongitude(0.00);
-        storedTaxi.setToLatitude(0.00);
-        storedTaxi.setToLongitude(0.00);
+        storedTaxi.setCurrentLatitude(0.00);
+        storedTaxi.setCurrentLongitude(0.00);
         storedTaxi.setBookingStrategy(BookingStrategy.ALL_AREA);
         taxiResource.createTaxi(storedTaxi);
         System.out.println("Booked taxi 1 " + storedTaxi);
@@ -73,12 +73,11 @@ public class TaxiFleetIntegrationTest extends BaseIntegrationTest {
         storedTaxi1.setAvailable(true);
         storedTaxi1.setFromLatitude(12.00);
         storedTaxi1.setFromLongitude(12.00);
-        storedTaxi1.setToLatitude(12.00);
-        storedTaxi1.setToLongitude(12.00);
+        storedTaxi1.setCurrentLatitude(12.00);
+        storedTaxi1.setCurrentLongitude(12.00);
         storedTaxi1.setBookingStrategy(BookingStrategy.NEAR_BY);
         taxiResource.createTaxi(storedTaxi1);
         System.out.println("Booked taxi 2 " + storedTaxi1);
-
 
 
         StoredTaxi storedTaxi2 = new StoredTaxi();
@@ -87,12 +86,11 @@ public class TaxiFleetIntegrationTest extends BaseIntegrationTest {
         storedTaxi2.setAvailable(false);
         storedTaxi2.setFromLatitude(0.00);
         storedTaxi2.setFromLongitude(0.00);
-        storedTaxi2.setToLatitude(0.00);
-        storedTaxi2.setToLongitude(0.00);
+        storedTaxi2.setCurrentLatitude(0.00);
+        storedTaxi2.setCurrentLongitude(0.00);
         storedTaxi2.setBookingStrategy(BookingStrategy.ALL_AREA);
         taxiResource.createTaxi(storedTaxi2);
         System.out.println("Booked taxi 3 " + storedTaxi2);
-
 
 
         StoredTaxi storedTaxi3 = new StoredTaxi();
@@ -101,8 +99,8 @@ public class TaxiFleetIntegrationTest extends BaseIntegrationTest {
         storedTaxi3.setAvailable(true);
         storedTaxi3.setFromLatitude(0.00);
         storedTaxi3.setFromLongitude(0.00);
-        storedTaxi3.setToLatitude(0.00);
-        storedTaxi3.setToLongitude(0.00);
+        storedTaxi2.setCurrentLatitude(0.00);
+        storedTaxi2.setCurrentLongitude(0.00);
         storedTaxi3.setBookingStrategy(BookingStrategy.NEAR_BY);
         taxiResource.createTaxi(storedTaxi3);
         System.out.println("Booked taxi 4 " + storedTaxi3);
@@ -291,7 +289,7 @@ public class TaxiFleetIntegrationTest extends BaseIntegrationTest {
         //Below Booking is not present as taxi is not accepting booking all area
 
         //Lets Test race condition
-        System.out.println("\nTesting race condition for booking "+ storedBooking.getBookingId());
+        System.out.println("\nTesting race condition for booking " + storedBooking.getBookingId());
 
         testRaceCondition(storedBooking);
 
@@ -321,7 +319,6 @@ public class TaxiFleetIntegrationTest extends BaseIntegrationTest {
         System.out.println("\n Dashboard Stats after all booking \n" + dashboardResource.getDashboardStats().getEntity());
 
 
-
         //Now set availability for one taxi to true to book again
         System.out.println("\n Setting one taxi availability to true and eligible booking \n" + storedTaxi2.getTaxiNumber());
         taxiResource.updateTaxiAvailability(storedTaxi2.getTaxiNumber(), true, TaxiStatus.AVAILABLE);
@@ -345,7 +342,7 @@ public class TaxiFleetIntegrationTest extends BaseIntegrationTest {
         System.out.println("\n Dashboard Stats after all booking \n" +
                 dashboardResource.getDashboardStats().getEntity());
 
-        System.out.println("\n Dashboard Stats after all booking for one taxi \n" + storedTaxi2.getTaxiNumber() + " "+
+        System.out.println("\n Dashboard Stats after all booking for one taxi \n" + storedTaxi2.getTaxiNumber() + " " +
                 dashboardResource.getAllBookingsByTaxiNumber(storedTaxi2.getTaxiNumber()).getEntity());
 
 
@@ -391,7 +388,7 @@ public class TaxiFleetIntegrationTest extends BaseIntegrationTest {
                 latch.await(); // Wait until both threads are ready
                 Response response = taxiResource.selectBooking("AU11A", raceBooking.getBookingId());
                 if (response.getStatus() == Response.ok().build().getStatus()) {
-                    System.out.println("Thread 1 have booked taxi and taxi number is "+ "AU11A");
+                    System.out.println("Thread 1 have booked taxi and taxi number is " + "AU11A");
                     Assertions.assertEquals(Response.ok().build()
                                     .getStatus(), response.getStatus(),
                             "Thread 1 should have successfully assigned taxi1 to the booking " + raceBooking.getBookingId());
@@ -408,16 +405,15 @@ public class TaxiFleetIntegrationTest extends BaseIntegrationTest {
                 latch.await(); // Wait until both threads are ready
                 Response response = taxiResource.selectBooking("AU14N", raceBooking.getBookingId());
                 if (response.getStatus() == Response.ok().build().getStatus()) {
-                    System.out.println("Thread 2 have booked taxi and taxi number is "+ "AU14N");
+                    System.out.println("Thread 2 have booked taxi and taxi number is " + "AU14N");
                     Assertions.assertEquals(Response.ok().build()
                                     .getStatus(), response.getStatus(),
-                            "Thread 2 should have successfully assigned taxi2 to the booking."+ raceBooking.getBookingId());
+                            "Thread 2 should have successfully assigned taxi2 to the booking." + raceBooking.getBookingId());
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
         });
-
 
 
         // Start both threads
