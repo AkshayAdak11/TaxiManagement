@@ -130,6 +130,7 @@ public class TaxiResource {
         return taxiService.selectBooking(taxiNumber, bookingId);
     }
 
+
     @GET
     @Path("/all/subscribed/taxis")
     @Operation(summary = "Get all subscribed taxis")
