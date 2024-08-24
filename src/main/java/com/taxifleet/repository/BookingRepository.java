@@ -11,9 +11,6 @@ public interface BookingRepository {
     List<StoredBooking> getAllBookings();
     StoredBooking updateBooking(StoredBooking booking);
     void deleteBooking(Long bookingId);
-    List<StoredBooking> findBookingsByLocation(Location location);
 
     List<StoredBooking> findAllPendingBookings();
-
-    List<StoredBooking> getBookingsForTaxi(String taxiNumber);
 }

@@ -35,32 +35,19 @@ public class BookingRepositoryImpl implements BookingRepository {
 
     @Override
     public StoredBooking updateBooking(StoredBooking booking) {
-        return bookingDAO.update(booking);
+        return bookingDAO.updateStoredBooking(booking);
     }
 
     @Override
     public void deleteBooking(Long id) {
         StoredBooking booking = bookingDAO.findByBookingId(id);
         if (booking != null) {
-            bookingDAO.delete(booking);
+            bookingDAO.deleteStoredBanking(booking);
         }
-    }
-
-    @Override
-    public List<StoredBooking> findBookingsByLocation(Location location) {
-        return bookingDAO.findAll().stream()
-                .filter(booking -> location.getLatitude() == booking.getFromLatitude())
-                .filter(booking -> location.getLongitude() == booking.getFromLongitude())
-                .collect(Collectors.toList());
     }
 
     @Override
     public List<StoredBooking> findAllPendingBookings() {
         return bookingDAO.findPendingBookings();
         }
-
-    @Override
-    public List<StoredBooking> getBookingsForTaxi(String taxiNumber) {
-        return bookingDAO.getAllBookingsForTaxi(taxiNumber);
-    }
 }

@@ -6,11 +6,11 @@ import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredTaxi;
 import com.taxifleet.enums.TaxiStatus;
 import com.taxifleet.factory.TaxiObserverFactory;
-import com.taxifleet.observer.TaxiManager;
+import com.taxifleet.services.TaxiManager;
 import com.taxifleet.observer.TaxisObserver;
 import com.taxifleet.repository.TaxiRepository;
+import com.taxifleet.services.BookingAssignmentService;
 import com.taxifleet.services.BookingService;
-import com.taxifleet.services.CentralizedBookingService;
 import com.taxifleet.services.DashboardService;
 import com.taxifleet.services.TaxiService;
 
@@ -27,7 +27,7 @@ public class CachedTaxiServiceImpl implements TaxiService {
     private final BookingService bookingService;
     private final TaxiObserverFactory taxiObserverFactory;
 
-    private final CentralizedBookingService centralizedBookingService;
+    private final BookingAssignmentService bookingAssignmentService;
     private final DashboardService dashboardService;
 
     private final TaxisObserver taxiObservers;
@@ -36,13 +36,13 @@ public class CachedTaxiServiceImpl implements TaxiService {
     public CachedTaxiServiceImpl(TaxiRepository taxiRepository,
                                  BookingService bookingService,
                                  TaxiObserverFactory taxiObserverFactory,
-                                 CentralizedBookingService centralizedBookingService,
+                                 BookingAssignmentService bookingAssignmentService,
                                  DashboardService dashboardService,
                                  TaxisObserver taxiObservers) {
         this.taxiRepository = taxiRepository;
         this.bookingService = bookingService;
         this.taxiObserverFactory = taxiObserverFactory;
-        this.centralizedBookingService = centralizedBookingService;
+        this.bookingAssignmentService = bookingAssignmentService;
         this.dashboardService = dashboardService;
         this.taxiObservers = taxiObservers;
         this.taxiCache = Caffeine.newBuilder()
@@ -76,7 +76,7 @@ public class CachedTaxiServiceImpl implements TaxiService {
         taxiCache.put(createdTaxi.getTaxiNumber(), createdTaxi);
         taxiObservers.registerObserver(taxiObserverFactory.createObserver(taxi,
                 taxiObserverFactory.createStrategy(taxi.getBookingStrategy(),
-                        this, bookingService, dashboardService), centralizedBookingService));
+                        this, bookingService, dashboardService), bookingAssignmentService));
         return createdTaxi;
     }
 

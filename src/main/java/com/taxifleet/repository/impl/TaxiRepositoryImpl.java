@@ -36,38 +36,19 @@ public class TaxiRepositoryImpl implements TaxiRepository {
 
     @Override
     public void updateTaxi(StoredTaxi taxi) {
-        taxiDAO.update(taxi);
+        taxiDAO.updateTaxi(taxi);
     }
 
     @Override
     public void deleteTaxi(String taxiNumber) {
         StoredTaxi taxi = taxiDAO.findByTaxiNumber(taxiNumber);
         if (taxi != null) {
-            taxiDAO.delete(taxi);
-        }
-    }
-
-    @Override
-    public void setTaxiAvailability(String taxiNumber, boolean available) {
-        StoredTaxi taxi = taxiDAO.findByTaxiNumber(taxiNumber);
-        if (taxi != null) {
-            taxi.setAvailable(available);
-            taxiDAO.update(taxi);
+            taxiDAO.deleteTaxi(taxi);
         }
     }
 
     @Override
     public List<StoredTaxi> findNearbyTaxis(Double latitude, Double longitude, Double radius) {
         return taxiDAO.findNearbyTaxis(latitude, longitude, radius);
-    }
-
-    @Override
-    public StoredTaxi findNearByAvailableTaxi(Double latitude, Double longitude, Double radius) {
-        return taxiDAO.findNearbyTaxis(latitude, longitude, radius)
-                .stream()
-                .filter(StoredTaxi::isAvailable)
-                .filter(taxi -> TaxiStatus.AVAILABLE.equals(taxi.getStatus()))
-                .findFirst()
-                .orElse(null);
     }
 }

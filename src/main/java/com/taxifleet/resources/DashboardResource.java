@@ -74,8 +74,8 @@ public class DashboardResource {
 
 
     @GET
-    @Path("/stats/location/bookings")
-    @Operation(description = "Get all stats of Booking for taxis")
+    @Path("/stats/time/bookings")
+    @Operation(description = "Get all stats of Booking for taxis according to time")
     public Response getAllBookingsForTimeRange(
             @ApiParam(required = true) @QueryParam("startTime") Date startTime,
             @ApiParam(required = true) @QueryParam("endTime") Date endTime) {
@@ -86,12 +86,15 @@ public class DashboardResource {
 
 
     @GET
-    @Path("/stats/time/bookings")
-    @Operation(description = "Get all stats of Booking for taxis")
+    @Path("/stats/location/bookings")
+    @Operation(description = "Get all stats of Booking done for taxis according to location")
     public Response getAllBookingsForLocation(
-            @ApiParam(required = true) @PathParam("bookingLatitude") double bookingLatitude,
-            @ApiParam(required = true) @PathParam("bookingLongitude") double bookingLongitude) {
-        List<StoredDashboard> bookings = dashboardService.findByLocationRange(bookingLatitude, bookingLongitude);
+            @ApiParam(required = true) @PathParam("minLatitude") double minLatitude,
+            @ApiParam(required = true) @PathParam("maxLatitude") double maxLatitude,
+            @ApiParam(required = true) @PathParam("minLongitude") double minLongitude,
+            @ApiParam(required = true) @PathParam("maxLongitude") double maxLongitude) {
+        List<StoredDashboard> bookings = dashboardService.findByLocationRange(minLatitude, maxLatitude, minLongitude,
+                maxLongitude);
         Map<String, Object> statsMap = computeBookingStats(bookings);
         return Response.ok(statsMap).build();
     }

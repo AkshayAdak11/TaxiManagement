@@ -4,7 +4,7 @@
 //import com.taxifleet.db.StoredTaxi;
 //import com.taxifleet.enums.BookingStatus;
 //import com.taxifleet.enums.TaxiStatus;
-//import com.taxifleet.services.CentralizedBookingService;
+//import com.taxifleet.services.BookingAssignmentService;
 //import com.taxifleet.strategy.BookingAssignmentStrategy;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
@@ -16,14 +16,14 @@
 //public class TaxiObserverTest {
 //    private StoredTaxi taxi;
 //    private BookingAssignmentStrategy assignmentStrategy;
-//    private CentralizedBookingService centralizedBookingService;
+//    private BookingAssignmentService centralizedBookingService;
 //    private TaxiManager taxiObserver;
 //
 //    @BeforeEach
 //    public void setUp() {
 //        taxi = Mockito.mock(StoredTaxi.class);
 //        assignmentStrategy = Mockito.mock(BookingAssignmentStrategy.class);
-//        centralizedBookingService = Mockito.mock(CentralizedBookingService.class);
+//        centralizedBookingService = Mockito.mock(BookingAssignmentService.class);
 //        taxiObserver = new TaxiManager(taxi, assignmentStrategy, centralizedBookingService);
 //    }
 //

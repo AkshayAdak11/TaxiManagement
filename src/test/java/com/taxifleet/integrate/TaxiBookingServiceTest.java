@@ -7,7 +7,7 @@ import com.taxifleet.db.StoredTaxi;
 import com.taxifleet.enums.BookingStatus;
 import com.taxifleet.enums.BookingStrategy;
 import com.taxifleet.enums.TaxiStatus;
-import com.taxifleet.observer.TaxiManager;
+import com.taxifleet.services.TaxiManager;
 import com.taxifleet.resources.BookingResource;
 import com.taxifleet.resources.DashboardResource;
 import com.taxifleet.resources.TaxiResource;
@@ -366,12 +366,12 @@ public class TaxiBookingServiceTest extends BaseIntegrationTest {
         System.out.println("\n Dashboard Stats after all booking in time range of curr > 20 min so 3 bookings \n" +
                 dashboardResource.getAllBookingsForTimeRange(queryStartDate, queryEndDate).getEntity());
 
-        System.out.println("\n Dashboard Stats after all booking in location range 0 to 10 \n" +
-                dashboardResource.getAllBookingsForLocation(0.00, 10.00).getEntity());
+        System.out.println("\n Dashboard Stats after all booking done in location range 0 to 10 \n" +
+                dashboardResource.getAllBookingsForLocation(0.00, 10.00, 0.00, 10.00).getEntity());
 
 
-        System.out.println("\n Dashboard Stats after all booking in location range 10 to 20 \n" +
-                dashboardResource.getAllBookingsForLocation(10.00, 20.00).getEntity());
+        System.out.println("\n Dashboard Stats after all booking done in location range 10 to 20 \n" +
+                dashboardResource.getAllBookingsForLocation(10.00, 20.00, 10.00, 30.00).getEntity());
 
     }
 

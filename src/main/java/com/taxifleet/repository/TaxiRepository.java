@@ -12,7 +12,5 @@ public interface TaxiRepository {
     StoredTaxi createTaxi(StoredTaxi taxi);
     void updateTaxi(StoredTaxi taxi);
     void deleteTaxi(String taxiNumber);
-    void setTaxiAvailability(String taxiNumber, boolean available);
     List<StoredTaxi> findNearbyTaxis(Double latitude, Double longitude, Double radius);
-    StoredTaxi findNearByAvailableTaxi(Double latitude, Double longitude, Double radius);
 }

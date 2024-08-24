@@ -1,9 +1,9 @@
 package com.taxifleet.factory;
 
 import com.taxifleet.enums.BookingStrategy;
-import com.taxifleet.observer.TaxiManager;
+import com.taxifleet.services.TaxiManager;
+import com.taxifleet.services.BookingAssignmentService;
 import com.taxifleet.services.BookingService;
-import com.taxifleet.services.CentralizedBookingService;
 import com.taxifleet.services.DashboardService;
 import com.taxifleet.services.TaxiService;
 import com.taxifleet.strategy.AllDistanceBasedAssignmentStrategy;
@@ -11,11 +11,12 @@ import com.taxifleet.strategy.BookingAssignmentStrategy;
 import com.taxifleet.db.StoredTaxi;
 import com.taxifleet.strategy.DistanceBasedAssignmentStrategy;
 
+//Factory Pattern
 public class TaxiObserverFactory {
 
     public TaxiManager createObserver(StoredTaxi taxi, BookingAssignmentStrategy strategy,
-                                      CentralizedBookingService centralizedBookingService) {
-        return new TaxiManager(taxi, strategy, centralizedBookingService);
+                                      BookingAssignmentService bookingAssignmentService) {
+        return new TaxiManager(taxi, strategy, bookingAssignmentService);
     }
 
     //Visitor Pattern

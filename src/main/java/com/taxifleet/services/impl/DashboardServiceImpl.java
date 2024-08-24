@@ -101,8 +101,11 @@ public class DashboardServiceImpl implements DashboardService {
         return dashboardDAO.findByTimeRange(startTime, endTime);
     }
 
-    public List<StoredDashboard> findByLocationRange(double fromLatitude, double fromLongitude) {
-        return dashboardDAO.findByLocationRange(fromLatitude, fromLongitude);
+    public List<StoredDashboard> findByLocationRange(double minLatitude,
+                                                     double maxLatitude,
+                                                     double minLongitude,
+                                                     double maxLongitude) {
+        return dashboardDAO.findByLocationRange(minLatitude, maxLatitude, minLongitude, maxLongitude);
     }
 
     @Override

@@ -6,14 +6,14 @@ import com.taxifleet.repository.impl.TaxiRepositoryImpl;
 import com.taxifleet.resources.BookingResource;
 import com.taxifleet.resources.DashboardResource;
 import com.taxifleet.resources.TaxiResource;
+import com.taxifleet.services.BookingAssignmentService;
 import com.taxifleet.services.BookingService;
 import com.taxifleet.services.TaxiService;
-import com.taxifleet.services.CentralizedBookingService;
 import com.taxifleet.services.DashboardService;
 import com.taxifleet.services.MessagingService;
 import com.taxifleet.services.impl.BookingServiceImpl;
 import com.taxifleet.services.impl.CachedTaxiServiceImpl;
-import com.taxifleet.services.impl.CentralizedBookingServiceImpl;
+import com.taxifleet.services.impl.BookingAssignmentServiceImpl;
 import com.taxifleet.services.impl.DashboardServiceImpl;
 import com.taxifleet.services.impl.MessagingServiceImpl;
 
@@ -28,6 +28,6 @@ public class TaxiFleetModule extends AbstractModule {
         bind(MessagingService.class).to(MessagingServiceImpl.class);
         bind(BookingService.class).to(BookingServiceImpl.class);
         bind(DashboardService.class).to(DashboardServiceImpl.class);
-        bind(CentralizedBookingService.class).to(CentralizedBookingServiceImpl.class);
+        bind(BookingAssignmentService.class).to(BookingAssignmentServiceImpl.class);
     }
 }

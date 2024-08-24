@@ -1,11 +1,11 @@
-package com.taxifleet.observer;
+package com.taxifleet.services;
 
 
 import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredTaxi;
 import com.taxifleet.enums.BookingStatus;
 import com.taxifleet.enums.TaxiStatus;
-import com.taxifleet.services.CentralizedBookingService;
+import com.taxifleet.services.BookingAssignmentService;
 import com.taxifleet.strategy.BookingAssignmentStrategy;
 import lombok.Data;
 import lombok.Setter;
@@ -20,15 +20,15 @@ public class TaxiManager {
     @Setter
     private final StoredTaxi taxi;
     private final BookingAssignmentStrategy assignmentStrategy;
-    private final CentralizedBookingService centralizedBookingService;
+    private final BookingAssignmentService bookingAssignmentService;
     private final ConcurrentMap<Long, StoredBooking> availableBookings = new ConcurrentHashMap<>();
 
     @Inject
     public TaxiManager(StoredTaxi taxi, BookingAssignmentStrategy assignmentStrategy,
-                       CentralizedBookingService centralizedBookingService) {
+                       BookingAssignmentService bookingAssignmentService) {
         this.taxi = taxi;
         this.assignmentStrategy = assignmentStrategy;
-        this.centralizedBookingService = centralizedBookingService;
+        this.bookingAssignmentService = bookingAssignmentService;
     }
 
     public void update(StoredBooking storedBooking) {
@@ -44,16 +44,16 @@ public class TaxiManager {
         if (Objects.nonNull(availableBookings.get(storedBooking.getBookingId())) &&
                 BookingStatus.PENDING.equals(storedBooking.getStatus())) {
             // Attempt booking to this taxi using the centralized service
-            boolean isBookingAssignedToTaxi = centralizedBookingService.assignBookingToTaxi(taxi, storedBooking);
+            boolean isBookingAssignedToTaxi = bookingAssignmentService.assignBookingToTaxi(taxi, storedBooking);
             if (isBookingAssignedToTaxi) {
                 if (bookTaxiWithPreference(storedBooking)) {
                     //Remove booking from all observers map to remove unused data and booking from all other taxis.
                     availableBookings.put(storedBooking.getBookingId(), storedBooking); // Updated stored Booking
-                    centralizedBookingService.notifyObserversBookingCompleted(storedBooking);
-                    centralizedBookingService.removeBookingFromAssignment(storedBooking);
+                    bookingAssignmentService.notifyObserversBookingCompleted(storedBooking);
+                    bookingAssignmentService.removeBookingFromAssignment(storedBooking);
                     return true;
                 }
-                centralizedBookingService.removeBookingFromAssignment(storedBooking);
+                bookingAssignmentService.removeBookingFromAssignment(storedBooking);
             }
         }
         return false;

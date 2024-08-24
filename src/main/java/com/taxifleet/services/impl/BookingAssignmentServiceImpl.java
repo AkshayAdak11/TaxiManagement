@@ -4,9 +4,8 @@ import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredTaxi;
 import com.taxifleet.enums.BookingStatus;
 import com.taxifleet.observer.TaxisObserver;
+import com.taxifleet.services.BookingAssignmentService;
 import com.taxifleet.services.BookingService;
-import com.taxifleet.services.TaxiService;
-import com.taxifleet.services.CentralizedBookingService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -15,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 @Singleton
-public class CentralizedBookingServiceImpl implements CentralizedBookingService {
+public class BookingAssignmentServiceImpl implements BookingAssignmentService {
 
     private final TaxisObserver taxisObserver;
 
@@ -23,8 +22,8 @@ public class CentralizedBookingServiceImpl implements CentralizedBookingService 
     private final ConcurrentMap<Long, StoredTaxi> bookingAssignments = new ConcurrentHashMap<>();
 
     @Inject
-    public CentralizedBookingServiceImpl(TaxisObserver taxisObserver,
-                                         BookingService bookingService) {
+    public BookingAssignmentServiceImpl(TaxisObserver taxisObserver,
+                                        BookingService bookingService) {
         this.taxisObserver = taxisObserver;
         this.bookingService = bookingService;
     }
@@ -53,12 +52,5 @@ public class CentralizedBookingServiceImpl implements CentralizedBookingService 
     @Override
     public void removeBookingFromAssignment(StoredBooking storedBooking) {
        bookingAssignments.remove(storedBooking.getBookingId());
-    }
-    @Override
-    public void notifyOtherObserversIfBookingIsCompleted(StoredBooking storedBooking) {
-        BookingStatus bookingStatus = bookingService.getBooking(storedBooking.getBookingId()).getStatus();
-        if (!BookingStatus.PENDING.equals(bookingStatus)) {
-            notifyObserversBookingCompleted(storedBooking);
-        }
     }
 }

@@ -18,5 +18,5 @@ public interface DashboardService {
 
     List<StoredDashboard> findByTimeRange(Date startTime, Date endTime);
 
-    List<StoredDashboard> findByLocationRange(double fromLatitude, double fromLongitude);
+    List<StoredDashboard> findByLocationRange(double minLatitude, double maxLatitude, double minLongitude, double maxLongitude);
 }

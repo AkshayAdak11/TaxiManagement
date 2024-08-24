@@ -1,6 +1,7 @@
 package com.taxifleet.observer;
 
 import com.taxifleet.db.StoredBooking;
+import com.taxifleet.services.TaxiManager;
 
 import javax.inject.Singleton;
 import java.util.ArrayList;
