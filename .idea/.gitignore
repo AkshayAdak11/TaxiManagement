@@ -1,3 +1,14 @@
 # Default ignored files
 /shelf/
 /workspace.xml
+
+
+# Target directory #
+*logs/**
+*target/**
+*.idea/**
+*build/**
+*out/**
+*javadoc/**
+docs/build/**
+classes/**
