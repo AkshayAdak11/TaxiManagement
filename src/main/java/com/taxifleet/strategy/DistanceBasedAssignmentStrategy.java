@@ -8,6 +8,11 @@ import com.taxifleet.model.Location;
 import com.taxifleet.services.BookingService;
 import com.taxifleet.services.TaxiService;
 import com.taxifleet.services.DashboardService;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+import javax.inject.Inject;
+
 
 public class DistanceBasedAssignmentStrategy implements BookingAssignmentStrategy {
     private final double maxDistance;
@@ -16,6 +21,7 @@ public class DistanceBasedAssignmentStrategy implements BookingAssignmentStrateg
 
     private final DashboardService dashboardService;
 
+    @Inject
     public DistanceBasedAssignmentStrategy(double maxDistance,
                                            TaxiService taxiService,
                                            BookingService bookingService,

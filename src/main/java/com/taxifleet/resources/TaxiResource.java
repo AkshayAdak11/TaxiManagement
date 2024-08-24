@@ -11,8 +11,17 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -116,14 +125,15 @@ public class TaxiResource {
     @UnitOfWork
     public Response selectBooking(
             @ApiParam(value = "Taxi ID", required = true) @PathParam("taxiNumber") String taxiNumber,
-            @ApiParam(value = "Booking ID", required = true) @QueryParam("bookingId") Long bookingId) {
+            @ApiParam(value = "Booking ID", required = true) @PathParam("bookingId") Long bookingId) {
 
-       return taxiService.selectBooking(taxiNumber, bookingId);
+        return taxiService.selectBooking(taxiNumber, bookingId);
     }
 
     @GET
     @Path("/all/subscribed/taxis")
     @Operation(summary = "Get all subscribed taxis")
+    @RolesAllowed("admin")
     public Response getAllSubscribedTaxis() {
         return taxiService.getAllSubscribedTaxis();
     }

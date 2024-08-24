@@ -1,13 +1,11 @@
-package com.taxifleet.integrate;
+package com.taxifleet;
 
 import com.google.inject.Inject;
-import com.taxifleet.BaseIntegrationTest;
 import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredTaxi;
 import com.taxifleet.enums.BookingStatus;
 import com.taxifleet.enums.BookingStrategy;
 import com.taxifleet.enums.TaxiStatus;
-import com.taxifleet.services.TaxiManager;
 import com.taxifleet.resources.BookingResource;
 import com.taxifleet.resources.DashboardResource;
 import com.taxifleet.resources.TaxiResource;
@@ -27,7 +25,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 @Slf4j
-public class TaxiBookingServiceTest extends BaseIntegrationTest {
+public class TaxiFleetIntegrationTest extends BaseIntegrationTest {
     private BookingResource bookingResource;
 
     @Inject
@@ -53,7 +51,7 @@ public class TaxiBookingServiceTest extends BaseIntegrationTest {
 
 
     @Test
-    void testWholeTestSuccess() throws InterruptedException {
+    void testTaxiFleetIntegrationTest() throws InterruptedException {
         //1. Book a Taxi with latitude and longitude  0 0 and status Available
 
         StoredTaxi storedTaxi = new StoredTaxi();
@@ -141,10 +139,8 @@ public class TaxiBookingServiceTest extends BaseIntegrationTest {
 
         //Now Set taxi preference whether taxi want to accept near by and all area bookings
         System.out.println("\n All subscribed taxis are as below");
-        List<TaxiManager> taxiObserversList = (List<TaxiManager>) taxiResource.getAllSubscribedTaxis().getEntity();
-        taxiObserversList.forEach(taxi -> {
-            System.out.println(taxi.getTaxi() + " " + taxi.getAssignmentStrategy() + " " + taxi.getAvailableBookings());
-        });
+        List<StoredTaxi> taxiObserversList = (List<StoredTaxi>) taxiResource.getAllSubscribedTaxis().getEntity();
+        taxiObserversList.forEach(System.out::println);
 
 
         System.out.println("\n Add bookings");

@@ -1,6 +1,7 @@
 package com.taxifleet.services;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredTaxi;
 import com.taxifleet.enums.BookingStatus;
@@ -17,7 +18,6 @@ import java.util.concurrent.ConcurrentMap;
 
 @Data
 public class TaxiManager {
-    @Setter
     private final StoredTaxi taxi;
     private final BookingAssignmentStrategy assignmentStrategy;
     private final BookingAssignmentService bookingAssignmentService;
@@ -33,7 +33,7 @@ public class TaxiManager {
 
     public void update(StoredBooking storedBooking) {
         //Push in map according to pattern strategy
-        if ((availableBookings.isEmpty() || !availableBookings.containsKey(storedBooking)) &&
+        if ((availableBookings.isEmpty() || !availableBookings.containsKey(storedBooking.getBookingId())) &&
                 (this.assignmentStrategy.isEligibleToServeBooking(taxi, storedBooking))) {
                 availableBookings.put(storedBooking.getBookingId(), storedBooking);
         }

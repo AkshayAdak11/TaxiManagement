@@ -13,7 +13,7 @@ public interface Observer {
 
     boolean removeObserver(String taxiNumber);
 
-    List<TaxiManager> getAllTaxiObserver();
+    List<TaxiManager> getAllTaxiManager();
 
     TaxiManager getTaxiObserver(String taxiNumber);
 

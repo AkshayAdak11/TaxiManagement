@@ -151,6 +151,8 @@ public class CachedTaxiServiceImpl implements TaxiService {
 
     @Override
     public Response getAllSubscribedTaxis() {
-        return Response.ok().entity(taxiObservers.getAllTaxiObserver()).build();
+        List<TaxiManager> taxisObservers = taxiObservers.getAllTaxiManager();
+
+        return Response.ok().entity(taxisObservers.stream().map(TaxiManager::getTaxi).toList()).build();
     }
 }

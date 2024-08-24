@@ -1,4 +1,11 @@
-com/taxifleet/BaseTest.class
-com/taxifleet/integrate/TaxiBookingServiceTest.class
 com/taxifleet/BaseIntegrationTest.class
+com/taxifleet/BaseTest.class
+com/taxifleet/services/impl/BookingAssignmentServiceImplTest.class
 com/taxifleet/BaseTest$1.class
+com/taxifleet/TaxiFleetIntegrationTest.class
+com/taxifleet/services/impl/DashboardServiceImplTest.class
+com/taxifleet/services/impl/CachedTaxiServiceImplTest.class
+com/taxifleet/utils/TaxiFleetExceptionMapperTest.class
+com/taxifleet/strategy/DistanceBasedAssignmentStrategyTest.class
+com/taxifleet/services/impl/BookingServiceImplTest.class
+com/taxifleet/strategy/AllDistanceBasedAssignmentStrategyTest.class

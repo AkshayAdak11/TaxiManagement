@@ -1,32 +1,40 @@
 package com.taxifleet.utils;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 
-import java.security.SignatureException;
+import java.security.Key;
 import java.util.Date;
 
 public class JWTUtils {
 
-    private static final String SECRET_KEY = "your-secret-key";
+    private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-    public static String generateToken(String subject) {
+    public static String generateToken(String subject, String role) {
         return Jwts.builder()
                 .setSubject(subject)
+                .claim("roles", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
-                .compact();
+                .signWith(SECRET_KEY)
+                .compact()
+                .replaceAll("\\s", "");
     }
 
     public static String extractRoles(String token) {
-        try {
-            Claims claims = (Claims) Jwts.parser().setSigningKey(SECRET_KEY).build().parseClaimsJws(token);
-            return claims.getSubject();
-        } catch (Exception e) {
-            throw e;
+        Jws<Claims> jwsClaims = Jwts.parser()
+                .setSigningKey(SECRET_KEY).build()
+                .parseClaimsJws(token);
+        Claims claims = jwsClaims.getBody();
+        return claims.get("roles", String.class);
+    }
 
-        }
+    public static void validateToken(String token) {
+        Jwts.parser()
+                .setSigningKey(SECRET_KEY).build()
+                .parseClaimsJws(token);
     }
 }

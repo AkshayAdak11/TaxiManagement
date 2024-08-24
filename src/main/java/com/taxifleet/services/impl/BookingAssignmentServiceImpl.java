@@ -2,10 +2,10 @@ package com.taxifleet.services.impl;
 
 import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredTaxi;
-import com.taxifleet.enums.BookingStatus;
 import com.taxifleet.observer.TaxisObserver;
 import com.taxifleet.services.BookingAssignmentService;
 import com.taxifleet.services.BookingService;
+import lombok.Getter;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -18,14 +18,12 @@ public class BookingAssignmentServiceImpl implements BookingAssignmentService {
 
     private final TaxisObserver taxisObserver;
 
-    private final BookingService bookingService;
+    @Getter
     private final ConcurrentMap<Long, StoredTaxi> bookingAssignments = new ConcurrentHashMap<>();
 
     @Inject
-    public BookingAssignmentServiceImpl(TaxisObserver taxisObserver,
-                                        BookingService bookingService) {
+    public BookingAssignmentServiceImpl(TaxisObserver taxisObserver) {
         this.taxisObserver = taxisObserver;
-        this.bookingService = bookingService;
     }
 
     @Override
@@ -45,7 +43,7 @@ public class BookingAssignmentServiceImpl implements BookingAssignmentService {
 
     @Override
     public void notifyObserversBookingCompleted(StoredBooking storedBooking) {
-        taxisObserver.getAllTaxiObserver()
+        taxisObserver.getAllTaxiManager()
                 .forEach(observer -> observer.removeBooking(storedBooking));
     }
 

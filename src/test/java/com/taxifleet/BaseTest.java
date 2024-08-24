@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS) //Single instance and would be used in all test classes
 public abstract class BaseTest {
 
     private final Bootstrap<?> bootstrap = mock(Bootstrap.class);

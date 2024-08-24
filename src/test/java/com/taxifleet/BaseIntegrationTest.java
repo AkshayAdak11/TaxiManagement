@@ -6,13 +6,14 @@ import com.google.inject.Injector;
 import com.taxifleet.module.BookingModule;
 import com.taxifleet.module.HibernateModule;
 import com.taxifleet.module.TaxiFleetModule;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
+
 import java.util.Arrays;
 import java.util.List;
 
 
 public abstract class BaseIntegrationTest extends BaseTest{
-    @Before
+    @BeforeEach
     public void baseSetup() {
         List<AbstractModule> abstractModules =
                 Arrays.asList(new TaxiFleetModule(), new HibernateModule(hibernateBundle), new BookingModule());

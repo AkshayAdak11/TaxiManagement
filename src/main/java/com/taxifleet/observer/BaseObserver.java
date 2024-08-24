@@ -20,7 +20,7 @@ public abstract class BaseObserver implements Observer {
     }
 
     @Override
-    public List<TaxiManager> getAllTaxiObserver() {
+    public List<TaxiManager> getAllTaxiManager() {
         return taxiManagers;
     }
 

@@ -1,10 +1,17 @@
 package com.taxifleet.db;
+
 import com.taxifleet.enums.BookingStatus;
 import lombok.Data;
-import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Version;
 import java.util.Date;
 import java.util.Objects;
 
@@ -36,7 +43,7 @@ public class StoredBooking {
     private double toLongitude;
 
     @Column(name = "fare")
-    private long fare; // This is in minutes
+    private double fare; // This is in minutes
 
     // Start and end time of the booking
     @Column(name = "start_time", nullable = false)

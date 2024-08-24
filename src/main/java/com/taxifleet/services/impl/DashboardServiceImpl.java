@@ -1,10 +1,12 @@
 package com.taxifleet.services.impl;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredDashboard;
 import com.taxifleet.db.dao.DashboardDAO;
 import com.taxifleet.enums.BookingStatus;
 import com.taxifleet.services.DashboardService;
+import lombok.Getter;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -18,7 +20,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class DashboardServiceImpl implements DashboardService {
 
     private final DashboardDAO dashboardDAO;
-    private final BlockingQueue<StoredDashboard> dashboardQueue = new LinkedBlockingQueue<>();
+    @Getter
+    public final BlockingQueue<StoredDashboard> dashboardQueue = new LinkedBlockingQueue<>();
 
     @Inject
     public DashboardServiceImpl(DashboardDAO dashboardDAO) {
@@ -73,7 +76,8 @@ public class DashboardServiceImpl implements DashboardService {
     /**
      * Process the dashboard update.
      */
-    private void processDashboardUpdate(StoredDashboard updatedStoredDashboard) {
+    @VisibleForTesting
+    public void processDashboardUpdate(StoredDashboard updatedStoredDashboard) {
         StoredDashboard storedDashboard = dashboardDAO.findByBookingId(updatedStoredDashboard.getBookingId());
         if (Objects.nonNull(storedDashboard)) {
             storedDashboard.setCancelled(updatedStoredDashboard.isCancelled());
