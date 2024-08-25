@@ -6,10 +6,8 @@ import com.taxifleet.enums.BookingStatus;
 import com.taxifleet.enums.TaxiStatus;
 import com.taxifleet.model.Location;
 import com.taxifleet.services.BookingService;
-import com.taxifleet.services.TaxiService;
 import com.taxifleet.services.DashboardService;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import com.taxifleet.services.TaxiService;
 
 import javax.inject.Inject;
 
@@ -35,9 +33,9 @@ public class DistanceBasedAssignmentStrategy implements BookingAssignmentStrateg
     @Override
     public boolean assignBooking(StoredTaxi taxi, StoredBooking storedBooking) {
         if (isNearBy(storedBooking, taxi) && (taxiService.bookTaxi(taxi, storedBooking))) {
-                bookingService.confirmBooking(storedBooking, taxi.getTaxiNumber());
-                dashboardService.updateStats(storedBooking, taxi.getTaxiNumber(), BookingStatus.COMPLETED);
-                return true;
+            bookingService.confirmBooking(storedBooking, taxi.getTaxiNumber());
+            dashboardService.updateStats(storedBooking, taxi.getTaxiNumber(), BookingStatus.COMPLETED);
+            return true;
 
         }
         return false;
@@ -51,7 +49,7 @@ public class DistanceBasedAssignmentStrategy implements BookingAssignmentStrateg
     public boolean isNearBy(StoredBooking storedBooking, StoredTaxi taxi) {
         Location bookingLocation = new Location(storedBooking.getFromLatitude(),
                 storedBooking.getFromLongitude());
-        Location taxiLocation = new Location(taxi.getFromLatitude(), taxi.getFromLongitude());
+        Location taxiLocation = new Location(taxi.getCurrentLatitude(), taxi.getCurrentLongitude());
 
         double distance = taxiLocation.distanceTo(bookingLocation.getLatitude(), bookingLocation.getLongitude());
         return distance <= maxDistance && taxi.isAvailable() && TaxiStatus.AVAILABLE.equals(taxi.getStatus()) &&

@@ -58,8 +58,6 @@ public class TaxiFleetIntegrationTest extends BaseIntegrationTest {
         storedTaxi.setStatus(TaxiStatus.AVAILABLE);
         storedTaxi.setTaxiNumber("AU11A");
         storedTaxi.setAvailable(true);
-        storedTaxi.setFromLatitude(0.00);
-        storedTaxi.setFromLongitude(0.00);
         storedTaxi.setCurrentLatitude(0.00);
         storedTaxi.setCurrentLongitude(0.00);
         storedTaxi.setBookingStrategy(BookingStrategy.ALL_AREA);
@@ -71,8 +69,6 @@ public class TaxiFleetIntegrationTest extends BaseIntegrationTest {
         storedTaxi1.setStatus(TaxiStatus.AVAILABLE);
         storedTaxi1.setTaxiNumber("AU12N");
         storedTaxi1.setAvailable(true);
-        storedTaxi1.setFromLatitude(12.00);
-        storedTaxi1.setFromLongitude(12.00);
         storedTaxi1.setCurrentLatitude(12.00);
         storedTaxi1.setCurrentLongitude(12.00);
         storedTaxi1.setBookingStrategy(BookingStrategy.NEAR_BY);
@@ -84,8 +80,6 @@ public class TaxiFleetIntegrationTest extends BaseIntegrationTest {
         storedTaxi2.setStatus(TaxiStatus.OFFLINE);
         storedTaxi2.setTaxiNumber("AU13A");
         storedTaxi2.setAvailable(false);
-        storedTaxi2.setFromLatitude(0.00);
-        storedTaxi2.setFromLongitude(0.00);
         storedTaxi2.setCurrentLatitude(0.00);
         storedTaxi2.setCurrentLongitude(0.00);
         storedTaxi2.setBookingStrategy(BookingStrategy.ALL_AREA);
@@ -97,8 +91,6 @@ public class TaxiFleetIntegrationTest extends BaseIntegrationTest {
         storedTaxi3.setStatus(TaxiStatus.AVAILABLE);
         storedTaxi3.setTaxiNumber("AU14N");
         storedTaxi3.setAvailable(true);
-        storedTaxi3.setFromLatitude(0.00);
-        storedTaxi3.setFromLongitude(0.00);
         storedTaxi2.setCurrentLatitude(0.00);
         storedTaxi2.setCurrentLongitude(0.00);
         storedTaxi3.setBookingStrategy(BookingStrategy.NEAR_BY);
@@ -167,8 +159,8 @@ public class TaxiFleetIntegrationTest extends BaseIntegrationTest {
         storedBooking1.setBookingId(123122L);
         storedBooking1.setFromLatitude(12.00);
         storedBooking1.setFromLongitude(12.00);
-        storedBooking1.setToLatitude(0.00);
-        storedBooking1.setToLongitude(0.00);
+        storedBooking1.setToLatitude(24.00);
+        storedBooking1.setToLongitude(24.00);
         storedBooking1.setStartTime(new Date());
         Date endDate1 = Date.from(LocalDateTime.now().plusMinutes(2).atZone(ZoneId.systemDefault()).toInstant());
         storedBooking1.setEndTime(endDate1);

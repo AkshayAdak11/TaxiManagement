@@ -20,7 +20,7 @@ public class BookingProcessor {
                             DashboardService dashboardService) {
         this.bookingService = bookingService;
         this.dashboardService = dashboardService;
-        this.schedulerService = Executors.newScheduledThreadPool(10); //We have kept the scheduler thread separate
+        this.schedulerService = Executors.newScheduledThreadPool(1); //We have kept the scheduler thread separate
         this.pendingWorkerService = Executors.newFixedThreadPool(20); // We have kept pending worker thread separate
     }
 

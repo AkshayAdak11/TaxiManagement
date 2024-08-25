@@ -13,8 +13,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -39,8 +44,8 @@ class DistanceBasedAssignmentStrategyTest {
         StoredTaxi taxi = new StoredTaxi();
         taxi.setAvailable(true);
         taxi.setStatus(TaxiStatus.AVAILABLE);
-        taxi.setFromLatitude(12.9716);
-        taxi.setFromLongitude(77.5946);
+        taxi.setCurrentLatitude(12.9716);
+        taxi.setCurrentLongitude(77.5946);
 
         StoredBooking booking = new StoredBooking();
         booking.setBookingId(1L);
@@ -62,8 +67,8 @@ class DistanceBasedAssignmentStrategyTest {
         StoredTaxi taxi = new StoredTaxi();
         taxi.setAvailable(false);
         taxi.setStatus(TaxiStatus.BOOKED);
-        taxi.setFromLatitude(12.9716);
-        taxi.setFromLongitude(77.5946);
+        taxi.setCurrentLatitude(12.9716);
+        taxi.setCurrentLongitude(77.5946);
 
         StoredBooking booking = new StoredBooking();
         booking.setBookingId(1L);
@@ -83,8 +88,8 @@ class DistanceBasedAssignmentStrategyTest {
         StoredTaxi taxi = new StoredTaxi();
         taxi.setAvailable(true);
         taxi.setStatus(TaxiStatus.AVAILABLE);
-        taxi.setFromLatitude(12.9716);
-        taxi.setFromLongitude(77.5946);
+        taxi.setCurrentLatitude(12.9716);
+        taxi.setCurrentLongitude(77.5946);
 
         StoredBooking booking = new StoredBooking();
         booking.setStatus(BookingStatus.PENDING);
@@ -101,8 +106,8 @@ class DistanceBasedAssignmentStrategyTest {
         StoredTaxi taxi = new StoredTaxi();
         taxi.setAvailable(false);
         taxi.setStatus(TaxiStatus.BOOKED);
-        taxi.setFromLatitude(12.9716);
-        taxi.setFromLongitude(77.5946);
+        taxi.setCurrentLatitude(12.9716);
+        taxi.setCurrentLongitude(77.5946);
 
         StoredBooking booking = new StoredBooking();
         booking.setStatus(BookingStatus.COMPLETED);
@@ -119,8 +124,8 @@ class DistanceBasedAssignmentStrategyTest {
         StoredTaxi taxi = new StoredTaxi();
         taxi.setAvailable(true);
         taxi.setStatus(TaxiStatus.AVAILABLE);
-        taxi.setFromLatitude(12.9716);
-        taxi.setFromLongitude(77.5946);
+        taxi.setCurrentLatitude(12.9716);
+        taxi.setCurrentLongitude(77.5946);
 
         StoredBooking booking = new StoredBooking();
         booking.setFromLatitude(12.9716);
@@ -135,8 +140,8 @@ class DistanceBasedAssignmentStrategyTest {
     @Test
     void testIsNearBy_False() {
         StoredTaxi taxi = new StoredTaxi();
-        taxi.setFromLatitude(12.9716);
-        taxi.setFromLongitude(77.5946);
+        taxi.setCurrentLatitude(12.9716);
+        taxi.setCurrentLongitude(77.5946);
 
         StoredBooking booking = new StoredBooking();
         booking.setFromLatitude(13.0358);

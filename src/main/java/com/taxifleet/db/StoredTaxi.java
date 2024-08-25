@@ -32,18 +32,6 @@ public class StoredTaxi {
     @Column(name = "status")
     private TaxiStatus status;
 
-    @Column(name = "from_latitude", nullable = false)
-    private double fromLatitude;
-
-    @Column(name = "from_longitude", nullable = false)
-    private double fromLongitude;
-
-    @Column(name = "to_latitude")
-    private double toLatitude;
-
-    @Column(name = "to_longitude")
-    private double toLongitude;
-
     @Column(name = "current_latitude", nullable = false)
     private double currentLatitude;
 
