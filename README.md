@@ -18,8 +18,8 @@ and provides a dashboard for statistics.
 1. Clone the repository:
 
 ```sh
-git clone https://github.com/<yourusername>/taxi-fleet.git
-cd taxi-fleet
+git clone git@github.com:AkshayAdak11/TaxiManagement.git
+cd TaxiManagement
 ```   
 
 Build the Docker image:
