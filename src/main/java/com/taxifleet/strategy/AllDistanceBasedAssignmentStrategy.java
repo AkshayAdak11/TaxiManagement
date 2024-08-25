@@ -9,7 +9,9 @@ import com.taxifleet.services.DashboardService;
 import com.taxifleet.services.TaxiService;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public class AllDistanceBasedAssignmentStrategy implements BookingAssignmentStrategy {
     private final TaxiService taxiService;
     private final BookingService bookingService;
@@ -27,15 +29,10 @@ public class AllDistanceBasedAssignmentStrategy implements BookingAssignmentStra
 
     @Override
     public boolean assignBooking(StoredTaxi taxi, StoredBooking storedBooking) {
-        if (taxi.isAvailable()) {
-            taxi.setAvailable(false);
-            taxi.setStatus(TaxiStatus.BOOKED);
-            boolean bookedTaxi = taxiService.bookTaxi(taxi, storedBooking);
-            if (bookedTaxi) {
-                bookingService.confirmBooking(storedBooking, taxi.getTaxiNumber());
-            }
+        if (taxi.isAvailable() && (taxiService.bookTaxi(taxi, storedBooking))) {
+            bookingService.confirmBooking(storedBooking, taxi.getTaxiNumber());
             dashboardService.updateStats(storedBooking, taxi.getTaxiNumber(), BookingStatus.COMPLETED);
-            return bookedTaxi;
+            return true;
         }
         return false;
     }

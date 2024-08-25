@@ -7,7 +7,6 @@ import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredDashboard;
 import com.taxifleet.db.StoredTaxi;
 import com.taxifleet.health.TaxiFleetHealthCheck;
-import com.taxifleet.module.BookingModule;
 import com.taxifleet.module.HibernateModule;
 import com.taxifleet.module.TaxiFleetModule;
 import com.taxifleet.resources.BookingResource;
@@ -55,7 +54,7 @@ public class TaxiFleetApplication extends Application<TaxiFleetConfiguration> {
     @Override
     public void run(TaxiFleetConfiguration configuration, Environment environment) {
         injector = Guice.createInjector(new TaxiFleetModule(),
-                new HibernateModule(hibernateBundle), new BookingModule());
+                new HibernateModule(hibernateBundle));
 
         final TaxiResource taxiResource = injector.getInstance(TaxiResource.class);
         final BookingResource bookingResource = injector.getInstance(BookingResource.class);

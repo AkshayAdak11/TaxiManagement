@@ -10,8 +10,9 @@ import com.taxifleet.services.DashboardService;
 import com.taxifleet.services.TaxiService;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
-
+@Singleton
 public class DistanceBasedAssignmentStrategy implements BookingAssignmentStrategy {
     private final double maxDistance;
     private final TaxiService taxiService;
@@ -32,7 +33,7 @@ public class DistanceBasedAssignmentStrategy implements BookingAssignmentStrateg
 
     @Override
     public boolean assignBooking(StoredTaxi taxi, StoredBooking storedBooking) {
-        if (isNearBy(storedBooking, taxi) && (taxiService.bookTaxi(taxi, storedBooking))) {
+        if (isNearBy(storedBooking, taxi) && taxi.isAvailable() && (taxiService.bookTaxi(taxi, storedBooking))) {
             bookingService.confirmBooking(storedBooking, taxi.getTaxiNumber());
             dashboardService.updateStats(storedBooking, taxi.getTaxiNumber(), BookingStatus.COMPLETED);
             return true;
