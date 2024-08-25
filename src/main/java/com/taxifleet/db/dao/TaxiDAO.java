@@ -1,6 +1,7 @@
 package com.taxifleet.db.dao;
 
 import com.taxifleet.db.StoredTaxi;
+import com.taxifleet.repository.TaxiRepository;
 import org.hibernate.SessionFactory;
 
 import javax.inject.Inject;
@@ -11,23 +12,23 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 
 @Singleton
-public class TaxiDAO extends BaseDAO<StoredTaxi> {
+public class TaxiDAO extends BaseDAO<StoredTaxi> implements TaxiRepository {
 
     @Inject
     public TaxiDAO(SessionFactory sessionFactory) {
         super(StoredTaxi.class, sessionFactory);
     }
 
-    public StoredTaxi create(StoredTaxi taxi) {
-        return save(taxi);
-    }
-
-    public void deleteTaxi(StoredTaxi taxi) {
-        delete(taxi);
-    }
-
     public void updateTaxi(StoredTaxi taxi) {
         update(taxi);
+    }
+
+    @Override
+    public void deleteTaxi(String taxiNumber) {
+        StoredTaxi taxi = findByTaxiNumber(taxiNumber);
+        if (taxi != null) {
+            delete(taxi);
+        }
     }
 
     public List<StoredTaxi> getAllTaxis() {
@@ -36,6 +37,16 @@ public class TaxiDAO extends BaseDAO<StoredTaxi> {
         Root<StoredTaxi> root = criteria.from(StoredTaxi.class);
         criteria.select(root);
         return get(criteria);
+    }
+
+    @Override
+    public StoredTaxi getTaxi(String taxiNumber) {
+        return findByTaxiNumber(taxiNumber);
+    }
+
+    @Override
+    public StoredTaxi createTaxi(StoredTaxi taxi) {
+        return save(taxi);
     }
 
 
