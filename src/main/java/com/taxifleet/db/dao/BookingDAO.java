@@ -13,7 +13,7 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 
 @Singleton
-public class BookingDAO extends BaseDAO<StoredBooking>{
+public class BookingDAO extends BaseDAO<StoredBooking> {
 
 
     @Inject
@@ -22,7 +22,7 @@ public class BookingDAO extends BaseDAO<StoredBooking>{
     }
 
     public StoredBooking create(StoredBooking storedBooking) {
-       return save(storedBooking);
+        return save(storedBooking);
     }
 
     public void deleteStoredBanking(StoredBooking storedBooking) {
@@ -35,43 +35,36 @@ public class BookingDAO extends BaseDAO<StoredBooking>{
 
 
     public List<StoredBooking> findAll() {
-        return executeInTransaction(session -> {
-            CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaQuery<StoredBooking> criteria = builder.createQuery(StoredBooking.class);
-            Root<StoredBooking> root = criteria.from(StoredBooking.class);
-            criteria.select(root);
-            return session.createQuery(criteria).getResultList();
-        });
+        CriteriaBuilder builder = sessionFactory.getCriteriaBuilder();
+        CriteriaQuery<StoredBooking> criteria = builder.createQuery(StoredBooking.class);
+        Root<StoredBooking> root = criteria.from(StoredBooking.class);
+        criteria.select(root);
+        return get(criteria);
     }
 
     public StoredBooking findByBookingId(long bookingId) {
-        return executeInTransaction(session -> {
-            CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaQuery<StoredBooking> criteria = builder.createQuery(StoredBooking.class);
-            Root<StoredBooking> root = criteria.from(StoredBooking.class);
-            criteria.select(root).where(builder.equal(root.get("bookingId"), bookingId));
-            return session.createQuery(criteria).uniqueResult();
-        });
+        CriteriaBuilder builder = sessionFactory.getCriteriaBuilder();
+        CriteriaQuery<StoredBooking> criteria = builder.createQuery(StoredBooking.class);
+        Root<StoredBooking> root = criteria.from(StoredBooking.class);
+        criteria.select(root).where(builder.equal(root.get("bookingId"), bookingId));
+        List<StoredBooking> results = get(criteria);
+        return results.isEmpty() ? null : results.get(0);
     }
 
-    public List<StoredBooking> findPendingBookings(){
-        return executeInTransaction(session -> {
-            CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaQuery<StoredBooking> criteria = builder.createQuery(StoredBooking.class);
-            Root<StoredBooking> root = criteria.from(StoredBooking.class);
-            criteria.select(root).where(builder.equal(root.get("status"), BookingStatus.PENDING));
-            return session.createQuery(criteria).getResultList();
-        });
+    public List<StoredBooking> findPendingBookings() {
+        CriteriaBuilder builder = sessionFactory.getCriteriaBuilder();
+        CriteriaQuery<StoredBooking> criteria = builder.createQuery(StoredBooking.class);
+        Root<StoredBooking> root = criteria.from(StoredBooking.class);
+        criteria.select(root).where(builder.equal(root.get("status"), BookingStatus.PENDING));
+        return get(criteria);
     }
 
     public List<StoredBooking> getAllBookingsForTaxi(String taxiNumber) {
-        return executeInTransaction(session -> {
-            CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaQuery<StoredBooking> criteria = builder.createQuery(StoredBooking.class);
-            Root<StoredBooking> root = criteria.from(StoredBooking.class);
-            Predicate taxiPredicate = builder.equal(root.get("taxiNumber"), taxiNumber);
-            criteria.select(root).where(taxiPredicate);
-            return session.createQuery(criteria).getResultList();
-        });
+        CriteriaBuilder builder = sessionFactory.getCriteriaBuilder();
+        CriteriaQuery<StoredBooking> criteria = builder.createQuery(StoredBooking.class);
+        Root<StoredBooking> root = criteria.from(StoredBooking.class);
+        Predicate taxiPredicate = builder.equal(root.get("taxiNumber"), taxiNumber);
+        criteria.select(root).where(taxiPredicate);
+        return get(criteria);
     }
 }

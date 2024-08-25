@@ -25,9 +25,6 @@ public class StoredTaxi {
     @Column(name = "taxi_number", unique = true, nullable = false)
     private String taxiNumber;
 
-    @Column(name = "booking_id")
-    private Long bookingId;
-
     @Column(name = "available")
     private boolean available;
 

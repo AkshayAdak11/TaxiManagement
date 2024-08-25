@@ -5,8 +5,8 @@ import com.taxifleet.db.StoredTaxi;
 import com.taxifleet.enums.BookingStatus;
 import com.taxifleet.enums.TaxiStatus;
 import com.taxifleet.services.BookingService;
-import com.taxifleet.services.TaxiService;
 import com.taxifleet.services.DashboardService;
+import com.taxifleet.services.TaxiService;
 
 import javax.inject.Inject;
 
@@ -29,7 +29,6 @@ public class AllDistanceBasedAssignmentStrategy implements BookingAssignmentStra
     public boolean assignBooking(StoredTaxi taxi, StoredBooking storedBooking) {
         if (taxi.isAvailable()) {
             taxi.setAvailable(false);
-            taxi.setBookingId(storedBooking.getBookingId());
             taxi.setStatus(TaxiStatus.BOOKED);
             boolean bookedTaxi = taxiService.bookTaxi(taxi, storedBooking);
             if (bookedTaxi) {

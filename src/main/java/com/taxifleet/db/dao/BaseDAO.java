@@ -4,6 +4,9 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import javax.persistence.criteria.CriteriaQuery;
+import java.util.List;
+
 public abstract class BaseDAO<T> {
 
     protected final Class<T> dtoClass;
@@ -54,6 +57,10 @@ public abstract class BaseDAO<T> {
             session.delete(dto);
             return dto;
         });
+    }
+
+    public List<T> get(CriteriaQuery<T> criteria) {
+        return executeInTransaction(session -> session.createQuery(criteria).getResultList());
     }
 
     @FunctionalInterface

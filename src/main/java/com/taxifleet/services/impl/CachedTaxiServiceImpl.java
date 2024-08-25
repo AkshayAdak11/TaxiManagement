@@ -84,7 +84,6 @@ public class CachedTaxiServiceImpl implements TaxiService {
     @Override
     public boolean bookTaxi(StoredTaxi taxi, StoredBooking storedBooking) {
         taxi.setAvailable(false);
-        taxi.setBookingId(storedBooking.getBookingId());
         taxi.setToLatitude(storedBooking.getToLatitude());
         taxi.setToLongitude(storedBooking.getToLongitude());
         taxi.setFromLatitude(storedBooking.getFromLatitude());

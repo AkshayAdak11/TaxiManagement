@@ -1,7 +1,6 @@
 package com.taxifleet.db.dao;
 
 import com.taxifleet.db.StoredTaxi;
-import com.taxifleet.model.Location;
 import org.hibernate.SessionFactory;
 
 import javax.inject.Inject;
@@ -31,38 +30,34 @@ public class TaxiDAO extends BaseDAO<StoredTaxi> {
         update(taxi);
     }
 
-    public List<StoredTaxi> findAll() {
-        return executeInTransaction(session -> {
-            CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaQuery<StoredTaxi> criteria = builder.createQuery(StoredTaxi.class);
-            Root<StoredTaxi> root = criteria.from(StoredTaxi.class);
-            criteria.select(root);
-            return session.createQuery(criteria).getResultList();
-        });
+    public List<StoredTaxi> getAllTaxis() {
+        CriteriaBuilder builder = sessionFactory.getCriteriaBuilder();
+        CriteriaQuery<StoredTaxi> criteria = builder.createQuery(StoredTaxi.class);
+        Root<StoredTaxi> root = criteria.from(StoredTaxi.class);
+        criteria.select(root);
+        return get(criteria);
     }
 
+
     public StoredTaxi findByTaxiNumber(String taxiNumber) {
-        return executeInTransaction(session -> {
-            CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaQuery<StoredTaxi> criteria = builder.createQuery(StoredTaxi.class);
-            Root<StoredTaxi> root = criteria.from(StoredTaxi.class);
-            criteria.select(root).where(builder.equal(root.get("taxiNumber"), taxiNumber));
-            return session.createQuery(criteria).uniqueResult();
-        });
+        CriteriaBuilder builder = sessionFactory.getCriteriaBuilder();
+        CriteriaQuery<StoredTaxi> criteria = builder.createQuery(StoredTaxi.class);
+        Root<StoredTaxi> root = criteria.from(StoredTaxi.class);
+        criteria.select(root).where(builder.equal(root.get("taxiNumber"), taxiNumber));
+        List<StoredTaxi> results = get(criteria);
+        return results.isEmpty() ? null : results.get(0);
     }
 
     public List<StoredTaxi> findNearbyTaxis(Double latitude, Double longitude, Double radius) {
-        return executeInTransaction(session -> {
-            CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaQuery<StoredTaxi> criteria = builder.createQuery(StoredTaxi.class);
-            Root<StoredTaxi> root = criteria.from(StoredTaxi.class);
-            criteria.select(root).where(
-                    builder.and(
-                            builder.between(root.get("location").get("latitude"), latitude - radius, latitude + radius),
-                            builder.between(root.get("location").get("longitude"), longitude - radius, longitude + radius)
-                    )
-            );
-            return session.createQuery(criteria).getResultList();
-        });
+        CriteriaBuilder builder = sessionFactory.getCriteriaBuilder();
+        CriteriaQuery<StoredTaxi> criteria = builder.createQuery(StoredTaxi.class);
+        Root<StoredTaxi> root = criteria.from(StoredTaxi.class);
+        criteria.select(root).where(
+                builder.and(
+                        builder.between(root.get("location").get("latitude"), latitude - radius, latitude + radius),
+                        builder.between(root.get("location").get("longitude"), longitude - radius, longitude + radius)
+                )
+        );
+        return get(criteria);
     }
 }

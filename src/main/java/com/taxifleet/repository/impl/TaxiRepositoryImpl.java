@@ -2,7 +2,6 @@ package com.taxifleet.repository.impl;
 
 import com.taxifleet.db.StoredTaxi;
 import com.taxifleet.db.dao.TaxiDAO;
-import com.taxifleet.enums.TaxiStatus;
 import com.taxifleet.repository.TaxiRepository;
 
 import javax.inject.Inject;
@@ -31,7 +30,7 @@ public class TaxiRepositoryImpl implements TaxiRepository {
 
     @Override
     public List<StoredTaxi> getAllTaxis() {
-        return taxiDAO.findAll();
+        return taxiDAO.getAllTaxis();
     }
 
     @Override

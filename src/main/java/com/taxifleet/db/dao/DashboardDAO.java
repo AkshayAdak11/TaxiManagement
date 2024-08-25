@@ -1,7 +1,6 @@
 package com.taxifleet.db.dao;
 
 import com.taxifleet.db.StoredDashboard;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import javax.inject.Inject;
@@ -22,13 +21,11 @@ public class DashboardDAO extends BaseDAO<StoredDashboard> {
     }
 
     public List<StoredDashboard> getAllDashboards() {
-        return executeInTransaction(session -> {
-            CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaQuery<StoredDashboard> criteria = builder.createQuery(StoredDashboard.class);
-            Root<StoredDashboard> root = criteria.from(StoredDashboard.class);
-            criteria.select(root);
-            return session.createQuery(criteria).getResultList();
-        });
+        CriteriaBuilder builder = sessionFactory.getCriteriaBuilder();
+        CriteriaQuery<StoredDashboard> criteria = builder.createQuery(StoredDashboard.class);
+        Root<StoredDashboard> root = criteria.from(StoredDashboard.class);
+        criteria.select(root);
+        return get(criteria);
     }
 
     public void saveOrUpdateDashboard(StoredDashboard dashboard) {
@@ -39,53 +36,47 @@ public class DashboardDAO extends BaseDAO<StoredDashboard> {
     }
 
     public StoredDashboard findByBookingId(long bookingId) {
-        return executeInTransaction(session -> {
-            CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaQuery<StoredDashboard> criteria = builder.createQuery(StoredDashboard.class);
-            Root<StoredDashboard> root = criteria.from(StoredDashboard.class);
-            criteria.select(root).where(builder.equal(root.get("bookingId"), bookingId));
-            return session.createQuery(criteria).uniqueResult();
-        });
+        CriteriaBuilder builder = sessionFactory.getCriteriaBuilder();
+        CriteriaQuery<StoredDashboard> criteria = builder.createQuery(StoredDashboard.class);
+        Root<StoredDashboard> root = criteria.from(StoredDashboard.class);
+        criteria.select(root).where(builder.equal(root.get("bookingId"), bookingId));
+        List<StoredDashboard> results = get(criteria);
+        return results.isEmpty() ? null : results.get(0);
     }
 
     public List<StoredDashboard> findAllBookingsByTaxiId(String taxiNumber) {
-        return executeInTransaction(session -> {
-            CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaQuery<StoredDashboard> criteria = builder.createQuery(StoredDashboard.class);
-            Root<StoredDashboard> root = criteria.from(StoredDashboard.class);
-            criteria.select(root).where(builder.equal(root.get("taxiNumber"), taxiNumber));
-            return session.createQuery(criteria).getResultList();
-        });
+        CriteriaBuilder builder = sessionFactory.getCriteriaBuilder();
+        CriteriaQuery<StoredDashboard> criteria = builder.createQuery(StoredDashboard.class);
+        Root<StoredDashboard> root = criteria.from(StoredDashboard.class);
+        criteria.select(root).where(builder.equal(root.get("taxiNumber"), taxiNumber));
+        return get(criteria);
     }
 
     public List<StoredDashboard> findByTimeRange(Date startTime, Date endTime) {
-        return executeInTransaction(session -> {
-            CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaQuery<StoredDashboard> criteria = builder.createQuery(StoredDashboard.class);
-            Root<StoredDashboard> root = criteria.from(StoredDashboard.class);
-            criteria.select(root).where(
-                    builder.and(
-                            builder.greaterThanOrEqualTo(root.get("startTime"), startTime),
-                            builder.lessThanOrEqualTo(root.get("endTime"), endTime)
-                    )
-            );
-            return session.createQuery(criteria).getResultList();
-        });
+        CriteriaBuilder builder = sessionFactory.getCriteriaBuilder();
+        CriteriaQuery<StoredDashboard> criteria = builder.createQuery(StoredDashboard.class);
+        Root<StoredDashboard> root = criteria.from(StoredDashboard.class);
+        criteria.select(root).where(
+                builder.and(
+                        builder.greaterThanOrEqualTo(root.get("startTime"), startTime),
+                        builder.lessThanOrEqualTo(root.get("endTime"), endTime)
+                )
+        );
+        return get(criteria);
     }
+
 
     public List<StoredDashboard> findByLocationRange(double minLatitude,
                                                      double maxLatitude,
                                                      double minLongitude,
                                                      double maxLongitude) {
-        return executeInTransaction(session -> {
-            CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaQuery<StoredDashboard> criteria = builder.createQuery(StoredDashboard.class);
-            Root<StoredDashboard> root = criteria.from(StoredDashboard.class);
+        CriteriaBuilder builder = sessionFactory.getCriteriaBuilder();
+        CriteriaQuery<StoredDashboard> criteria = builder.createQuery(StoredDashboard.class);
+        Root<StoredDashboard> root = criteria.from(StoredDashboard.class);
 
-            Predicate latitudePredicate = builder.between(root.get("bookingLatitude"), minLatitude, maxLatitude);
-            Predicate longitudePredicate = builder.between(root.get("bookingLongitude"), minLongitude, maxLongitude);
-            criteria.select(root).where(builder.and(latitudePredicate, longitudePredicate));
-            return session.createQuery(criteria).getResultList();
-        });
+        Predicate latitudePredicate = builder.between(root.get("bookingLatitude"), minLatitude, maxLatitude);
+        Predicate longitudePredicate = builder.between(root.get("bookingLongitude"), minLongitude, maxLongitude);
+        criteria.select(root).where(builder.and(latitudePredicate, longitudePredicate));
+        return get(criteria);
     }
 }
