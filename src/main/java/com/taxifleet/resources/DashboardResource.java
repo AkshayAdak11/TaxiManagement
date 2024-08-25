@@ -1,6 +1,5 @@
 package com.taxifleet.resources;
 
-import com.taxifleet.db.StoredBooking;
 import com.taxifleet.db.StoredDashboard;
 import com.taxifleet.services.DashboardService;
 import io.swagger.annotations.ApiParam;
@@ -15,13 +14,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Path("/dashboard")
 @Tag(name = "Dashboard", description = "Dashboard for Statistics")
@@ -37,7 +33,7 @@ public class DashboardResource {
 
     @GET
     @Path("/booking/stats")
-    @Operation(description = "Get all stats for Booking state")
+    @Operation(description = "Get all stats for Booking")
     public Response getDashboardStats() {
         List<StoredDashboard> dashboard = dashboardService.getLatestDashboardStats();
         return Response.ok(computeBookingStats(dashboard)).build();
@@ -45,7 +41,7 @@ public class DashboardResource {
 
     @GET
     @Path("/all/bookings")
-    @Operation(description = "Get all stats of Booking")
+    @Operation(description = "Get all stats")
     public Response getAllBooking() {
         List<StoredDashboard> storedDashboardList = dashboardService.getLatestDashboardStats();
         return Response.ok(storedDashboardList).build();
@@ -86,7 +82,7 @@ public class DashboardResource {
 
 
     @GET
-    @Path("/stats/location/bookings")
+    @Path("/stats/location/bookings/{minLatitude}/{maxLatitude}/{minLongitude}/{maxLongitude}")
     @Operation(description = "Get all stats of Booking done for taxis according to location")
     public Response getAllBookingsForLocation(
             @ApiParam(required = true) @PathParam("minLatitude") double minLatitude,

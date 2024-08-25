@@ -49,9 +49,36 @@ podman run -p 8080:8080 taxifleet-app
 API Endpoints
 
    ```sh
-GET /taxis: List all taxis with their status and location.
-POST /bookings: Create a new booking and publish it to available taxis.
-GET /dashboard/stats: Get booking statistics.
+Taxi APIs
+    GET /taxis: Returns a list of all taxis.
+    GET /taxis/{taxiNumber}: Returns a taxi by its ID.
+    POST /taxis: Creates a new taxi and returns the created taxi.
+    PUT /taxis/{taxiNumber}/{availabilityStatus}: Sets the availability of a taxi by its ID.
+    DELETE /taxis/{taxiNumber}: Deletes a taxi by its ID.
+    GET /taxis/nearby: Returns a list of nearby taxis based on latitude, longitude, and radius.
+    GET /taxis/all/booking/assigned: Returns all bookings assigned to a specific taxi.
+    POST /taxis/{taxiNumber}/unsubscribe: Unsubscribes a taxi from receiving bookings.
+    POST /taxis/{taxiNumber}/{bookingId}/select-booking: Selects a booking for the taxi.
+    GET /taxis/all/subscribed/taxis: Returns all subscribed taxis (admin only).
+
+Booking APIs
+    GET /bookings: List all bookings.
+    POST /bookings: Create a new booking.
+    GET /bookings/{bookingId}: Get details of a specific booking.
+    PUT /bookings/{bookingId}: Update a booking.
+    DELETE /bookings/{bookingId}: Delete a booking.
+    
+Dashboard APIs
+    GET /dashboard/booking/stats: Get all stats for Booking.
+    GET /dashboard/all/bookings: Get all stats.
+    GET /dashboard/stats/{taxiNumber}: Get all stats of Booking for taxis.
+    GET /dashboard/stats/{taxiNumber}/bookings: Get all stats of Booking for taxis.
+    GET /dashboard/stats/time/bookings: Get all stats of Booking for taxis according to time.
+    GET /dashboard/stats/location/bookings/{minLatitude}/{maxLatitude}/{minLongitude}/{maxLongitude}: Get all stats of Booking done for taxis according to location.
+    
+JWT APIs
+    GET /jwt/generate/{subject}/{role}: Generates a JWT token for a given subject and role.
+    GET /jwt/roles/{token}: Extracts roles from a given JWT token.
 ```
 
 Testing:
@@ -114,7 +141,7 @@ system’s functionality. The main modules include:
 UML Diagrams
 
 Class:
-![UMLTaxiFleet.svg](UMLTaxiFleet.svg)
+![TaxiFleetUML.svg](TaxiFleetUML.svg)
 
 Flow Diagram - LLD
 
